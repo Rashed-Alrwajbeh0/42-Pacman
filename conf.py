@@ -1,5 +1,18 @@
 from enum import Enum
+import json
 from pydantic import BaseModel, Field, field_validator
+
+
+ConfigurationKeys = [
+    "highscore_filename",
+    "lives",
+    "pacgum",
+    "points_per_pacgum",
+    "points_per_super_pacgum",
+    "points_per_ghost",
+    "level_max_time",
+    "levels"
+]
 
 
 class defaults(Enum):
@@ -35,7 +48,7 @@ def non_existing_warning(var, default):
 def validate_int(var, data, default):
     if data is not None and data != "":
         try:
-            temp = int(data)
+            temp = int(float(data))
             if temp <= 0:
                 error_value_warning(
                     var, data, default.value
@@ -51,6 +64,22 @@ def validate_int(var, data, default):
         var, default.value
     )
     return default.value, 0
+
+
+def validate_levels(current_level, data: str, default, answer):
+    keys = current_level.keys()
+    for i in keys:
+        if i.lower() != data:
+            continue
+        temp1, temp2 = validate_int(
+            data, current_level[i], default
+        )
+        if not temp2:
+            return 1
+        else:
+            answer[data] = temp1
+            return 0
+    return 1
 
 
 class confing(BaseModel):
@@ -85,25 +114,25 @@ class confing(BaseModel):
         return defaults.Highscore_filename.value
 
     @field_validator("lives", mode="before")
-    @classmethod
-    def lives_validator(cls, data):
+    @staticmethod
+    def lives_validator(data):
         return validate_int("lives", data, defaults.Lives)[0]
 
     @field_validator("pacgum", mode="before")
-    @classmethod
-    def pacgum_validator(cls, data):
+    @staticmethod
+    def pacgum_validator(data):
         return validate_int("pacgum", data, defaults.Pacgum)[0]
 
     @field_validator("points_per_pacgum", mode="before")
-    @classmethod
-    def points_per_pacgum_validate(cls, data):
+    @staticmethod
+    def points_per_pacgum_validate(data):
         return validate_int(
             "points_per_pacgum", data, defaults.Points_per_pacgum
         )[0]
 
     @field_validator("points_per_super_pacgum", mode="before")
-    @classmethod
-    def points_per_super_pacgum_validator(cls, data):
+    @staticmethod
+    def points_per_super_pacgum_validator(data):
         return validate_int(
             "points_per_super_pacgum",
             data,
@@ -111,49 +140,76 @@ class confing(BaseModel):
         )[0]
 
     @field_validator("points_per_ghost", mode="before")
-    @classmethod
-    def points_per_ghost_validator(cls, data):
+    @staticmethod
+    def points_per_ghost_validator(data):
         return validate_int(
             "points_per_ghost", data, defaults.Points_per_ghost
         )[0]
 
     @field_validator("level_max_time", mode="before")
-    @classmethod
-    def level_max_time_validator(cls, data):
+    @staticmethod
+    def level_max_time_validator(data):
         return validate_int(
             "level_max_time", data, defaults.Level_max_time
         )[0]
 
     @field_validator("levels", mode="before")
-    @classmethod
-    def levels_validator(cls, data):
+    @staticmethod
+    def levels_validator(data):
         if data:
             levels_list = list()
+            if not isinstance(data, list):
+                return defaults.Levels.value
             for level in data:
                 level_dict = dict()
-                temp1, temp2 = validate_int(
-                        "levels", level["level_number"], defaults.Levels
-                        )
-                if not temp2:
+                if not isinstance(level, dict):
                     return defaults.Levels.value
-                else:
-                    level_dict["level_number"] = temp1
-
-                temp1, temp2 = validate_int(
-                        "levels", level["height"], defaults.Levels
-                        )
-                if not temp2:
+                n = validate_levels(
+                    level, "level_number", defaults.Levels, level_dict
+                    )
+                if n:
                     return defaults.Levels.value
-                else:
-                    level_dict["height"] = temp1
-
-                temp1, temp2 = validate_int(
-                        "levels", level["width"], defaults.Levels
-                        )
-                if not temp2:
+                n = validate_levels(
+                    level, "height", defaults.Levels, level_dict
+                    )
+                
+                if n:
                     return defaults.Levels.value
-                else:
-                    level_dict["width"] = temp1
-
+                n = validate_levels(
+                    level, "width", defaults.Levels, level_dict
+                    )
+                if n:
+                    return defaults.Levels.value
                 levels_list.append(level_dict)
             return levels_list
+        else:
+            return defaults.Levels.value
+
+    def info(self):
+        print(f"highscore_filename : {self.highscore_filename}")
+        print(f"lives : {self.lives}")
+        print(f"pacgum : {self.pacgum}")
+        print(f"points_per_pacgum : {self.points_per_pacgum}")
+        print(f"points_per_super_pacgum : {self.points_per_super_pacgum}")
+        print(f"points_per_ghost : {self.points_per_ghost}")
+        print(f"level_max_time : {self.level_max_time}")
+        print(f"levels : {self.levels}")
+
+
+def read_json(FileName):
+    try:
+        with open(FileName, "r") as file:
+            data = dict()
+            data = json.load(file)
+            sorted_data = dict()
+            for i in data.keys():
+                if i.lower() not in ConfigurationKeys:
+                    print(f"Warning: The \"{i}\" key is invalid !!")
+                    continue
+                sorted_data[i.lower()] = data[i]
+            return confing(**sorted_data)
+        return confing()
+    except Exception:
+        print(f"Warning: There is invalid values in the {FileName} file"
+              ", so the default values will be used !")
+        return confing()
