@@ -19,9 +19,12 @@ mode = "menu"
 
 maze = None
 levels_list = [0]*10
+
+
 def make_maszes(levels):
     current_level = 0
-    while(current_level < 10):
+
+    while (current_level < 10):
         level_conf = configuration.levels[current_level]
         try:
             maze = Maze(
@@ -49,6 +52,18 @@ def make_maszes(levels):
 finish_level = False
 mazes = False
 level_idx = 0
+
+
+def draw_background(screen, image_path):
+    screen.fill((0, 0, 0))
+
+    image = pygame.image.load(image_path).convert()
+    resized_image = pygame.transform.smoothscale(image, (1600, 900)).convert_alpha()
+
+    resized_image.set_alpha(50)
+    screen.blit(resized_image, (0, 0))
+
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -69,8 +84,8 @@ while True:
         mode = show_menu(screen)
 
     elif mode == "game":
-
-        screen.fill((0, 0, 0))
+        draw_background(
+            screen=screen, image_path="Pictures/Backgrounds/1.jpeg")
         level, size = levels_list[level_idx]
         level.draw(screen, size)
         levels_list[level_idx] = (level, size)

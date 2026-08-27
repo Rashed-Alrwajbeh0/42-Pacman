@@ -72,7 +72,7 @@ class Maze:
     def draw(self, screen: pygame.Surface, cell_size: int,
              origin: tuple[int, int] = (0, 0)) -> None:
         ox, oy = origin
-        wall_color = (33, 33, 222)
+        wall_color = (255, 255, 51)
         pacgum_color = (255, 255, 255)
 
         for y in range(self.height):
