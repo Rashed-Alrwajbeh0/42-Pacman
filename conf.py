@@ -24,7 +24,7 @@ class defaults(Enum):
     Points_per_ghost = 200
     Level_max_time = 120
     Levels = [
-        {"level_number": i, "height": 10 * i, "width": 10 * i}
+        {"level_number": i, "height": 25 , "width": 25 }
         for i in range(1, 11)
     ]
 
@@ -45,11 +45,21 @@ def non_existing_warning(var, default):
     )
 
 
-def validate_int(var, data, default):
+def validate_int(var, data, default, is_level = 0):
     if data is not None and data != "":
         try:
             temp = int(float(data))
             if temp <= 0:
+                error_value_warning(
+                    var, data, default.value
+                )
+                return default.value, 0
+            if is_level == 1 and temp > 25:
+                error_value_warning(
+                    var, data, default.value
+                )
+                return default.value, 0
+            if is_level == 2 and temp > 10:
                 error_value_warning(
                     var, data, default.value
                 )
@@ -66,13 +76,13 @@ def validate_int(var, data, default):
     return default.value, 0
 
 
-def validate_levels(current_level, data: str, default, answer):
+def validate_levels(current_level, data: str, default, answer, is_level=0):
     keys = current_level.keys()
     for i in keys:
         if i.lower() != data:
             continue
         temp1, temp2 = validate_int(
-            data, current_level[i], default
+            data, current_level[i], default, is_level
         )
         if not temp2:
             return 1
@@ -165,22 +175,25 @@ class confing(BaseModel):
                 if not isinstance(level, dict):
                     return defaults.Levels.value
                 n = validate_levels(
-                    level, "level_number", defaults.Levels, level_dict
+                    level, "level_number", defaults.Levels, level_dict, 2
                     )
                 if n:
                     return defaults.Levels.value
                 n = validate_levels(
-                    level, "height", defaults.Levels, level_dict
+                    level, "height", defaults.Levels, level_dict, 1
                     )
                 
                 if n:
                     return defaults.Levels.value
                 n = validate_levels(
-                    level, "width", defaults.Levels, level_dict
+                    level, "width", defaults.Levels, level_dict, 1
                     )
                 if n:
                     return defaults.Levels.value
                 levels_list.append(level_dict)
+            if len(levels_list) < 10:
+                print("Warning: The default value of the level will used, because u enter less than 10 levels")
+                return defaults.Levels.value
             return levels_list
         else:
             return defaults.Levels.value
