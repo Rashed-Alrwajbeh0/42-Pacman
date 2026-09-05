@@ -1,6 +1,6 @@
 import pygame
 import sys
-from clones import PacMan
+from cell import PacMan
 
 
 def draw_background(screen, image_path):
@@ -43,8 +43,6 @@ def game_play(screen, levels, cofiguration):
         draw_background(
                 screen=screen, image_path="Pictures/Backgrounds/1.jpeg")
         level_maze.draw(screen, size, (450, 50))
-        pygame.draw.circle(surface=screen,color="red",center=(x, y),radius=10)
-
         keyboard = pygame.key.get_just_pressed()
         if keyboard[pygame.K_UP]:
             direction = "top"
@@ -59,7 +57,7 @@ def game_play(screen, levels, cofiguration):
             grid_width=width,
             grid_list=level_maze.grid,
             direction=direction,
-            destance=7,
+            destance=2,
             size=size)
         pygame.display.update()
         fram_clock.tick(60)

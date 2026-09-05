@@ -80,6 +80,27 @@ class Maze:
                 cell.right = px + cell_size
                 cell.bottom = py + cell_size
 
+    def put_pacgums_in_cells(self, cell_size, origin):
+        ox, oy = origin
+        for y in range(self.height):
+            for x in range(self.width):
+                cell = self.grid[y][x]
+                px, py = ox + x * cell_size, oy + y * cell_size
+                if cell.content_id == Cell.PACGUM:
+                    cell.content = Pac_Gum(
+                        image="Pictures/gums/gum.png",
+                        center_pos=(px + cell_size // 2, py + cell_size // 2),
+                        points=50,
+                        size=5
+                    )
+                elif cell.content_id == Cell.SUPER_PACGUM:
+                    cell.content = Super_Pac_Gum(
+                        image="Pictures/gums/gum.png",
+                        center_pos=(px + cell_size // 2, py + cell_size // 2),
+                        points=50,
+                        size=15
+                    )
+
     def draw(self, screen: pygame.Surface, cell_size: int,
              origin: tuple[int, int] = (0, 0)) -> None:
         ox, oy = origin
@@ -114,18 +135,7 @@ class Maze:
                         (px + cell_size, py + cell_size), 2)
 
                 if cell.content_id == Cell.PACGUM:
-                    
-                    cell.content = Pac_Gum(
-                        image="Pictures/gums/gum.png",
-                        center_pos=(px+cell_size//2, py+cell_size//2),
-                        points=50,
-                        size=5)
                     cell.content.draw(screen)
                 elif cell.content_id == Cell.SUPER_PACGUM:
-                    cell.content = Super_Pac_Gum(
-                        image="Pictures/gums/gum.png",
-                        center_pos=(px+cell_size//2, py+cell_size//2),
-                        points=50,
-                        size=15)
                     cell.content.draw(screen)
         return self.grid

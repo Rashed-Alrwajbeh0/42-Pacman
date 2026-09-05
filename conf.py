@@ -23,7 +23,7 @@ class defaults(Enum):
     Points_per_ghost = 200
     Level_max_time = 120
     Levels = [
-        {"level_number": i, "height": 25 , "width": 25 }
+        {"level_number": i, "height": 25, "width": 25}
         for i in range(1, 11)
     ]
 
@@ -44,7 +44,7 @@ def non_existing_warning(var, default):
     )
 
 
-def validate_int(var, data, default, is_level = 0):
+def validate_int(var, data, default, is_level=0):
     if data is not None and data != "":
         try:
             temp = int(float(data))

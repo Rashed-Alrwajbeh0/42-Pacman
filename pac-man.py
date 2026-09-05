@@ -26,7 +26,7 @@ def make_maszes(levels):
     current_level = 0
     mode = "menu"
 
-    while (current_level < 10):
+    while (current_level < 1):
         level_conf = configuration.levels[current_level]
         try:
             maze = Maze(
@@ -36,13 +36,13 @@ def make_maszes(levels):
                 perfect=False,
                 number_of_gums=configuration.pacgum
             )
+            size = maze.cell_size_for(
+                            window_width - 100,
+                            window_height - 150)
+            maze.put_pacgums_in_cells(cell_size=size, origin=(450, 50))
             levels[current_level] = (
                 maze,
-                maze.cell_size_for(
-                            window_width - 100,
-                            window_height - 150
-                            )
-                    )
+                size)
             current_level += 1
         except RuntimeError as exc:
             print(f"Warning: {exc}")
