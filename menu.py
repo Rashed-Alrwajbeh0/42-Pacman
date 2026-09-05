@@ -1,5 +1,6 @@
 import pygame
 from math import pow
+from game import game_play
 
 
 class Button:
@@ -62,7 +63,8 @@ def in_pac_man(point, screen_width, screen_height):
     return pow((x - cx), 2) + pow((y - cy), 2) <= pow(radius, 2)
 
 
-def show_menu(screen):
+
+def show_menu(screen, levels, cofiguration):
     screen_width, screen_height = screen.get_size()
 
     menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
@@ -137,7 +139,7 @@ def show_menu(screen):
     if pygame.mouse.get_pressed()[0]:
         mouse_point = pygame.mouse.get_pos()
         if start_button.collision(mouse_point):
-            return "game"
+            game_play(screen=screen, levels=levels, cofiguration=cofiguration)
         elif high_score_button.collision(mouse_point):
             return "score"
         elif controls_button.collision(mouse_point):

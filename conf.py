@@ -11,7 +11,6 @@ ConfigurationKeys = [
     "points_per_super_pacgum",
     "points_per_ghost",
     "level_max_time",
-    "levels"
 ]
 
 
@@ -76,22 +75,6 @@ def validate_int(var, data, default, is_level = 0):
     return default.value, 0
 
 
-def validate_levels(current_level, data: str, default, answer, is_level=0):
-    keys = current_level.keys()
-    for i in keys:
-        if i.lower() != data:
-            continue
-        temp1, temp2 = validate_int(
-            data, current_level[i], default, is_level
-        )
-        if not temp2:
-            return 1
-        else:
-            answer[data] = temp1
-            return 0
-    return 1
-
-
 class confing(BaseModel):
     highscore_filename: str = Field(default=defaults.Highscore_filename.value)
     lives: int = Field(default=defaults.Lives.value)
@@ -102,7 +85,7 @@ class confing(BaseModel):
     )
     points_per_ghost: int = Field(default=defaults.Points_per_ghost.value)
     level_max_time: int = Field(default=defaults.Level_max_time.value)
-    levels: list[dict[str, int]] | None = Field(default=defaults.Levels.value)
+    levels: list[dict[str, int]] = defaults.Levels.value
 
     @field_validator("highscore_filename", mode="before")
     @classmethod
@@ -162,41 +145,6 @@ class confing(BaseModel):
         return validate_int(
             "level_max_time", data, defaults.Level_max_time
         )[0]
-
-    @field_validator("levels", mode="before")
-    @staticmethod
-    def levels_validator(data):
-        if data:
-            levels_list = list()
-            if not isinstance(data, list):
-                return defaults.Levels.value
-            for level in data:
-                level_dict = dict()
-                if not isinstance(level, dict):
-                    return defaults.Levels.value
-                n = validate_levels(
-                    level, "level_number", defaults.Levels, level_dict, 2
-                    )
-                if n:
-                    return defaults.Levels.value
-                n = validate_levels(
-                    level, "height", defaults.Levels, level_dict, 1
-                    )
-                
-                if n:
-                    return defaults.Levels.value
-                n = validate_levels(
-                    level, "width", defaults.Levels, level_dict, 1
-                    )
-                if n:
-                    return defaults.Levels.value
-                levels_list.append(level_dict)
-            if len(levels_list) < 10:
-                print("Warning: The default value of the level will used, because u enter less than 10 levels")
-                return defaults.Levels.value
-            return levels_list
-        else:
-            return defaults.Levels.value
 
     def info(self):
         print(f"highscore_filename : {self.highscore_filename}")

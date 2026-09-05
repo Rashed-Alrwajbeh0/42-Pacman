@@ -43,19 +43,19 @@ class Maze:
         x_choise = [0, self.width - 1]
         y_choise = [0, self.height -1]
         number_of_gums += 1
-        while(number_of_gums):
+        while (number_of_gums):
             x = randint(1, self.width - 1)
             y = randint(1, self.height - 1)
-            while(self.grid[x][y].is_pattern or
-                  x in x_choise or
-                  y in y_choise):
+            while (self.grid[x][y].is_pattern or
+                   x in x_choise or
+                   y in y_choise):
                 x = randint(1, self.width - 1)
                 y = randint(1, self.height - 1)
             self.grid[x][y].content_id = Cell.PACGUM
-            number_of_gums-=1
+            number_of_gums -= 1
  
-    def center_cell(self) -> tuple[int, int]:
-        return self.width // 2, self.height // 2
+    def center_cell(self) -> Cell:
+        return self.grid[self.width//2][self.height//2]
 
     def remaining_pacgums(self) -> int:
         count = 0
@@ -69,16 +69,30 @@ class Maze:
         size = min(area_width // self.width, area_height // self.height)
         return max(size, 1)
 
+    def get_pos(self, origin, cell_size):
+        ox, oy = origin
+        for y in range(self.height):
+            for x in range(self.width):
+                cell = self.grid[y][x]
+                px, py = ox + x * cell_size, oy + y * cell_size
+                cell.left = px
+                cell.top = py
+                cell.right = px + cell_size
+                cell.bottom = py + cell_size
+
     def draw(self, screen: pygame.Surface, cell_size: int,
              origin: tuple[int, int] = (0, 0)) -> None:
         ox, oy = origin
         wall_color = (255, 255, 51)
-        pacgum_color = (255, 255, 255)
 
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.grid[y][x]
                 px, py = ox + x * cell_size, oy + y * cell_size
+                cell.left = px
+                cell.top = py
+                cell.right = px + cell_size
+                cell.bottom = py + cell_size
 
                 if cell.north:
                     pygame.draw.line(
@@ -99,14 +113,19 @@ class Maze:
                         (px + cell_size, py),
                         (px + cell_size, py + cell_size), 2)
 
-                center = (px + cell_size // 2, py + cell_size // 2)
                 if cell.content_id == Cell.PACGUM:
                     
-                    cell.content = Pac_Gum(image="Pictures/gums/gum.png",center_pos=(px+cell_size//2, py+cell_size//2), points=50)
-                    # pygame.draw.circle(screen, pacgum_color, center, 2)
+                    cell.content = Pac_Gum(
+                        image="Pictures/gums/gum.png",
+                        center_pos=(px+cell_size//2, py+cell_size//2),
+                        points=50,
+                        size=5)
                     cell.content.draw(screen)
                 elif cell.content_id == Cell.SUPER_PACGUM:
-                    cell.content = Super_Pac_Gum(image="Pictures/gums/gum.png",center_pos=(px+cell_size//2, py+cell_size//2), points=50)
-                    # pygame.draw.circle(screen, pacgum_color, center, 6)
+                    cell.content = Super_Pac_Gum(
+                        image="Pictures/gums/gum.png",
+                        center_pos=(px+cell_size//2, py+cell_size//2),
+                        points=50,
+                        size=15)
                     cell.content.draw(screen)
         return self.grid
