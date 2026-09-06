@@ -77,7 +77,7 @@ def find_remaining_pacgums(maze: Maze) -> list[position]:
     positions: list[position] = []
     for y in range(maze.height):
         for x in range(maze.width):
-            if maze.grid[y][x].content in (Cell.PACGUM, Cell.SUPER_PACGUM):
+            if maze.grid[y][x].content_id in (Cell.PACGUM, Cell.SUPER_PACGUM):
                 positions.append((x, y))
     return positions
 

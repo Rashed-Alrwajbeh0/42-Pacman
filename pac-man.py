@@ -66,11 +66,8 @@ while True:
             print("Warning: The maze generator not found !!")
             sys.exit()
         mazes = True
-    if mode == "menu":
-        mode = show_menu(screen, levels=levels_list,cofiguration=configuration)
-
-    elif mode == "exit":
-        sys.exit()
-
+    show_menu(screen, levels=levels_list,
+              cofiguration=configuration,
+              fram_clock=fram_clock)
     pygame.display.update()
     fram_clock.tick(60)
