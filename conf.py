@@ -44,21 +44,11 @@ def non_existing_warning(var, default):
     )
 
 
-def validate_int(var, data, default, is_level=0):
+def validate_int(var, data, default, min_num = 0):
     if data is not None and data != "":
         try:
             temp = int(float(data))
-            if temp <= 0:
-                error_value_warning(
-                    var, data, default.value
-                )
-                return default.value, 0
-            if is_level == 1 and temp > 25:
-                error_value_warning(
-                    var, data, default.value
-                )
-                return default.value, 0
-            if is_level == 2 and temp > 10:
+            if temp <= min_num:
                 error_value_warning(
                     var, data, default.value
                 )
@@ -114,7 +104,7 @@ class confing(BaseModel):
     @field_validator("pacgum", mode="before")
     @staticmethod
     def pacgum_validator(data):
-        return validate_int("pacgum", data, defaults.Pacgum)[0]
+        return validate_int("pacgum", data, defaults.Pacgum, 3)[0]
 
     @field_validator("points_per_pacgum", mode="before")
     @staticmethod

@@ -20,7 +20,6 @@ mode = "menu"
 maze = None
 levels_list = [0]*10
 
-
 def make_maszes(levels):
     global mode
     current_level = 0
@@ -51,7 +50,6 @@ def make_maszes(levels):
 
 
 mazes = False
-
 
 while True:
     for event in pygame.event.get():
