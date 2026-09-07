@@ -43,7 +43,7 @@ def draw_background(screen, image_path, alpha=50):
 def where_i_am(
         point: tuple[int, int],
         cell_size: int,
-        ) -> Cell:
+        ) -> tuple[int, int]:
 
     Px, Py = point
 
