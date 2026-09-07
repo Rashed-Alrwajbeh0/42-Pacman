@@ -1,9 +1,6 @@
 import sys
 import pygame
 from conf import read_json
-from menu import show_menu
-from maze import Maze
-from cell import Cell
 from log_in import log_in_secreen
 
 argv = sys.argv
@@ -15,8 +12,6 @@ frame_clock = pygame.time.Clock()
 mode = "menu"
 pygame.time.set_timer
 maze = None
-levels_list = [0]*10
-
 
 while True:
     for event in pygame.event.get():
