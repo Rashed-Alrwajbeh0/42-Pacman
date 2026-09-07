@@ -22,10 +22,7 @@ class defaults(Enum):
     Points_per_super_pacgum = 50
     Points_per_ghost = 200
     Level_max_time = 120
-    Levels = [
-        {"level_number": i, "height": 25, "width": 25}
-        for i in range(1, 11)
-    ]
+    Levels = {"height": 25, "width": 25}
 
 
 def error_value_warning(var, data, default):

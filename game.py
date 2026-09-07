@@ -3,23 +3,42 @@ import sys
 from cell import PacMan
 from ghost import next_step_towards, seek_nearest_pacgum, chase_then_flee
 from ghost_entity import Ghost
+from maze import Maze
 
 
+current_level = 0
 
-def draw_background(screen, image_path):
+
+def make_level(configuration):
+    global current_level
+    level_conf = configuration.levels
+    print(level_conf)
+    try:
+        maze = Maze(
+            width=level_conf["width"],
+            height=level_conf["height"],
+            seed=42 if current_level == 0 else 0,
+            perfect=False,
+            number_of_gums=configuration.pacgum
+        )
+        size = maze.cell_size_for(1450, 800)
+        maze.put_pacgums_in_cells(cell_size=size, origin=(450, 50))
+        current_level += 1
+        return (maze, size)
+    except RuntimeError as exc:
+        print(f"Warning: {exc}")
+        exit()
+
+
+def draw_background(screen, image_path, alpha=50):
     screen.fill((0, 0, 0))
 
     image = pygame.image.load(image_path).convert()
     resized_image = pygame.transform.smoothscale(image, (1600, 900)).convert_alpha()
 
-    resized_image.set_alpha(50)
+    resized_image.set_alpha(alpha)
     screen.blit(resized_image, (0, 0))
 
-level_idx = 0
-
-def get_level(cofiguration):
-    global level_idx
-    return cofiguration.levels[level_idx]
 
 def where_i_am(
         point: tuple[int, int],
@@ -34,12 +53,12 @@ def where_i_am(
     answer_y = Py // cell_size
     return answer_y, answer_x
 
-def game_play(screen, levels, cofiguration):
-    level_maze, size = levels[0]
-    level_conf = get_level(cofiguration)
+
+def game_play(screen, cofiguration):
+    level_maze, size = make_level(configuration=cofiguration)
     fram_clock = pygame.time.Clock()
-    width = level_conf["width"]
-    hight = level_conf["height"]
+    width = cofiguration.levels["width"]
+    hight = cofiguration.levels["height"]
     center_cell = level_maze.center_cell()
     level_maze.get_pos((450, 50), size)
     x = (center_cell.left + center_cell.right) // 2

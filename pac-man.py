@@ -4,52 +4,19 @@ from conf import read_json
 from menu import show_menu
 from maze import Maze
 from cell import Cell
+from log_in import log_in_secreen
 
 argv = sys.argv
 configuration = read_json(argv[1])
 pygame.init()
 
-info = pygame.display.Info()
-window_width = min(1600, info.current_w - 100)
-window_height = min(900, info.current_h - 100)
-
-screen = pygame.display.set_mode((window_width, window_height))
-fram_clock = pygame.time.Clock()
+screen = pygame.display.set_mode((1600, 900))
+frame_clock = pygame.time.Clock()
 mode = "menu"
-
+pygame.time.set_timer
 maze = None
 levels_list = [0]*10
 
-def make_maszes(levels):
-    global mode
-    current_level = 0
-    mode = "menu"
-
-    while (current_level < 1):
-        level_conf = configuration.levels[current_level]
-        try:
-            maze = Maze(
-                width=level_conf["width"],
-                height=level_conf["height"],
-                seed=42 if current_level == 0 else 0,
-                perfect=False,
-                number_of_gums=configuration.pacgum
-            )
-            size = maze.cell_size_for(
-                            window_width - 100,
-                            window_height - 150)
-            maze.put_pacgums_in_cells(cell_size=size, origin=(450, 50))
-            levels[current_level] = (
-                maze,
-                size)
-            current_level += 1
-        except RuntimeError as exc:
-            print(f"Warning: {exc}")
-            levels = []
-            break
-
-
-mazes = False
 
 while True:
     for event in pygame.event.get():
@@ -60,14 +27,10 @@ while True:
                 mode = "menu"
             else:
                 sys.exit()
-    if not mazes:
-        make_maszes(levels_list)
-        if levels_list == []:
-            print("Warning: The maze generator not found !!")
-            sys.exit()
-        mazes = True
-    show_menu(screen, levels=levels_list,
-              cofiguration=configuration,
-              fram_clock=fram_clock)
+
+    log_in_secreen(screen=screen,
+                   frame_clock=frame_clock,
+                   conf=configuration)
+
     pygame.display.update()
-    fram_clock.tick(60)
+    frame_clock.tick(60)
