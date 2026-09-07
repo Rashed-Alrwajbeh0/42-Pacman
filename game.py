@@ -103,7 +103,6 @@ def game_play(screen, cofiguration):
             direction=direction,
             destance=2,
             size=size)
-        print(pacman.pos)
         for ghost in ghosts:
             ghost.update(level_maze,
                          where_i_am(

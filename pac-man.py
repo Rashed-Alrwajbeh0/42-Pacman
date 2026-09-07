@@ -9,9 +9,6 @@ pygame.init()
 
 screen = pygame.display.set_mode((1600, 900))
 frame_clock = pygame.time.Clock()
-mode = "menu"
-pygame.time.set_timer
-maze = None
 
 while True:
     for event in pygame.event.get():

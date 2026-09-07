@@ -186,7 +186,7 @@ def show_menu(screen, cofiguration, fram_clock):
             elif setting_button.collision(mouse_point):
                 return "sitting"
             elif exit_button.collision(mouse_point):
-                return "exit"
+                exit()
             return "menu"
         elif pygame.mouse.get_pressed()[2]:
             mouse_point = pygame.mouse.get_pos()
