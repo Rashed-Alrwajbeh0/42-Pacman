@@ -1,7 +1,7 @@
 import pygame
 from math import pow
 from typing import Optional
-
+from scores import show_score
 from game import game_play
 from conf import confing
 from sys import exit
@@ -192,7 +192,7 @@ def show_menu(
             if start_button.collision(mouse_point):
                 game_play(screen=screen, cofiguration=cofiguration)
             elif high_score_button.collision(mouse_point):
-                return "score"
+                show_score(screen=screen, conf=confing)
             elif controls_button.collision(mouse_point):
                 return "controls"
             elif setting_button.collision(mouse_point):

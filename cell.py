@@ -139,9 +139,12 @@ class PacMan:
             self,
             pos: tuple[int, int],
             screen: pygame.Surface,
-            cell_size: int) -> None:
+            cell_size: int,
+            lives: int) -> None:
         self.pos = pos
         self.__idx = 0
+        self.lives = lives
+        self.__center_pos = pos
         self.screen = screen
         self.__move: list[pygame.Surface] = []
         for i in range(1, 50):
@@ -310,3 +313,10 @@ class PacMan:
         }
         self.__desplay(
             pos=self.pos, rotation=rotation_map.get(self.direction, 0))
+
+    def reset_atfer_eaten(self, cheat=0) -> Optional[Exception]:
+        if not cheat:
+            if self.lives == 0:
+                raise ValueError("Finish Lives")
+            self.lives -= 1
+        self.pos = self.__center_pos

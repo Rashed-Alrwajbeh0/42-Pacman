@@ -33,7 +33,6 @@ def bfs_path(maza: Maze, start: position, goal: position
     queue: deque[list[position]] = deque([[start]])
 
     while queue:
-        print(1)
         path = queue.popleft()
         current = path[-1]
         for neighbor in maza.neighbors(*current):

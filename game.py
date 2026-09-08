@@ -66,6 +66,7 @@ def game_play(screen: pygame.Surface, cofiguration: confing) -> None:
     width = cofiguration.levels["width"]
     hight = cofiguration.levels["height"]
     center_cell = level_maze.center_cell()
+    direction = "right"
     level_maze.get_pos((450, 50), size)
     if (center_cell.left is None or center_cell.right is None or
             center_cell.top is None or center_cell.bottom is None):
@@ -75,6 +76,7 @@ def game_play(screen: pygame.Surface, cofiguration: confing) -> None:
     pacman = PacMan(
         pos=(x, y),
         screen=screen,
+        lives=3,
         cell_size=size)
     corners = [
                 (450, 50),
@@ -87,7 +89,6 @@ def game_play(screen: pygame.Surface, cofiguration: confing) -> None:
         Ghost(corners[2], corners[2], (255, 105, 180), seek_nearest_pacgum),
         Ghost(corners[3], corners[3], (0, 200, 255), chase_then_flee),
     ]
-    direction = "right"
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
