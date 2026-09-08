@@ -1,12 +1,15 @@
 import json
 import pygame
 from sys import exit
+from typing import Any, Optional, Union
+
 from menu import Button
+from conf import confing
 from game import draw_background
 from menu import show_menu
 
 
-def check_name(name):
+def check_name(name: str) -> Union[int, tuple[Any, Any]]:
     if len(name) == 0:
         return 0
     try:
@@ -23,7 +26,7 @@ def check_name(name):
         return 0
 
 
-def add_name(name, level, score):
+def add_name(name: str, level: int, score: int) -> None:
     with open("volum.json", "r") as f:
         json_data = json.load(f)
     with open("volum.json", "w") as f:
@@ -49,15 +52,15 @@ def add_name(name, level, score):
 class Field:
     def __init__(
             self,
-            pos,
-            width,
-            height,
-            border,
-            border_color,
-            border_radius,
-            font_color,
-            font_type="fonts/login.ttf",
-            font_size=40) -> None:
+            pos: tuple[int, int],
+            width: int,
+            height: int,
+            border: int,
+            border_color: str,
+            border_radius: int,
+            font_color: str,
+            font_type: str = "fonts/login.ttf",
+            font_size: int = 40) -> None:
 
         self.pos = pos
         self.is_active = False
@@ -78,8 +81,8 @@ class Field:
         self.field_font_type = pygame.font.Font(
             filename=font_type,
             size=font_size)
-        
-    def collision(self, point):
+
+    def collision(self, point: tuple[int, int]) -> bool:
         px, py = point
         button_x_left = self.Field_rect.left
         button_x_right = self.Field_rect.right
@@ -90,13 +93,16 @@ class Field:
                 py >= button_y_top and
                 py <= button_y_bottom)
 
-    def active(self):
+    def active(self) -> None:
         if pygame.mouse.get_pressed()[0]:
             mouse_pos = pygame.mouse.get_pos()
             if self.collision(mouse_pos):
                 self.is_active = True
 
-    def update_text(self, leter_id, leter):
+    def update_text(
+            self,
+            leter_id: Optional[int],
+            leter: Optional[str]) -> Optional[int]:
         if self.is_active:
             if leter_id == -1:
                 self.show_error = False
@@ -111,9 +117,9 @@ class Field:
                 if leter is not None:
                     self.text += leter
                 return 0
-                
+        return None
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
         self.font = self.field_font_type.render(
                 self.text, False, self.font_color)
         pygame.draw.rect(
@@ -128,25 +134,26 @@ class Field:
             (self.Field_rect.left + 10, self.Field_rect.top + 5))
 
 
-def show_error(screen, text, pos):
+def show_error(screen: pygame.Surface, text: str,
+               pos: tuple[int, int]) -> None:
 
     font = pygame.font.Font("fonts/login.ttf", size=20)
     text_in_font = font.render(text, False, "red")
     screen.blit(text_in_font, pos)
 
 
-
-def use_name_field(screen,
-                   show_field,
-                   field,
-                   leter,
-                   leter_id,
-                   conf,
-                   text_pos,
-                   text,
-                   text_height,
-                   text_width,
-                   frame_clock):
+def use_name_field(
+        screen: pygame.Surface,
+        show_field: bool,
+        field: Field,
+        leter: Optional[str],
+        leter_id: Optional[int],
+        conf: confing,
+        text_pos: tuple[int, int],
+        text: str,
+        text_height: int,
+        text_width: int,
+        frame_clock: pygame.time.Clock) -> None:
     if show_field:
         font = pygame.font.Font("fonts/login.ttf", size=20)
         text_in_font = font.render(text, False, "white")
@@ -166,17 +173,18 @@ def use_name_field(screen,
             field.active()
 
 
-def create_name_field(screen,
-                      show_field,
-                      field,
-                      leter,
-                      leter_id,
-                      conf,
-                      text_pos,
-                      text,
-                      text_height,
-                      text_width,
-                      frame_clock):
+def create_name_field(
+        screen: pygame.Surface,
+        show_field: bool,
+        field: Field,
+        leter: Optional[str],
+        leter_id: Optional[int],
+        conf: confing,
+        text_pos: tuple[int, int],
+        text: str,
+        text_height: int,
+        text_width: int,
+        frame_clock: pygame.time.Clock) -> None:
     if show_field:
         font = pygame.font.Font("fonts/login.ttf", size=20)
         text_in_font = font.render(text, False, "white")
@@ -198,7 +206,10 @@ def create_name_field(screen,
             field.active()
 
 
-def log_in_secreen(screen, frame_clock, conf):
+def log_in_secreen(
+        screen: pygame.Surface,
+        frame_clock: pygame.time.Clock,
+        conf: confing) -> None:
     button1 = Button(
         pos=(900, 250),
         text="Use Name",
@@ -239,9 +250,9 @@ def log_in_secreen(screen, frame_clock, conf):
     pacman = pygame.image.load("Pictures/login/pacman.png")
     resized_pacman = pygame.transform.smoothscale(pacman, (800, 900))
     while True:
-        leter = None
-        leter_id = None
-        
+        leter: Optional[str] = None
+        leter_id: Optional[int] = None
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -267,7 +278,7 @@ def log_in_secreen(screen, frame_clock, conf):
                 show_field_2 = False
             elif button2.collision(mouse_pos):
                 show_field_2 = True
-                show_field_1= False
+                show_field_1 = False
 
         if show_field_1:
             use_name_field(screen=screen,
@@ -297,7 +308,8 @@ def log_in_secreen(screen, frame_clock, conf):
                               text="Enter The New name",
                               frame_clock=frame_clock)
             if field2.show_error:
-                show_error(screen,
-                           "This name is used, try another one !!", (900, 630))
+                show_error(
+                    screen,
+                    "This name is used, try another one !!", (900, 630))
         pygame.display.update()
         frame_clock.tick(60)

@@ -1,23 +1,26 @@
 import pygame
 from math import pow
+from typing import Optional
+
 from game import game_play
+from conf import confing
 from sys import exit
 
 
 class Button:
     def __init__(
             self,
-            pos,
-            text,
-            width,
-            height,
-            border,
-            font_color,
-            border_color,
-            border_radius,
-            image=None,
-            font_path="fonts/BebasNeue-Regular.ttf",
-            font_size=50
+            pos: tuple[int, int],
+            text: str,
+            width: int,
+            height: int,
+            border: int,
+            font_color: str,
+            border_color: str | tuple[int, int, int],
+            border_radius: int,
+            image: Optional[str] = None,
+            font_path: str = "fonts/BebasNeue-Regular.ttf",
+            font_size: int = 50
             ) -> None:
         self.pos = pos
         self.text = text
@@ -37,7 +40,10 @@ class Button:
         self.button_rec = pygame.Rect(
                 self.pos[0], self.pos[1], self.width, self.height)
 
-    def draw(self, screen, image_pos=None):
+    def draw(
+            self,
+            screen: pygame.Surface,
+            image_pos: Optional[tuple[int, int]] = None) -> None:
         font = pygame.font.Font(self.font, size=self.font_size)
         button_text = font.render(self.text, False, self.font_color)
         button_text_rec = button_text.get_rect(
@@ -60,7 +66,7 @@ class Button:
             )
             screen.blit(self.resized_image, self.image_rect)
 
-    def collision(self, point):
+    def collision(self, point: tuple[int, int]) -> bool:
         px, py = point
         button_x_left = self.button_rec.left
         button_x_right = self.button_rec.right
@@ -72,7 +78,10 @@ class Button:
                 py <= button_y_bottom)
 
 
-def in_pac_man(point, screen_width, screen_height):
+def in_pac_man(
+        point: tuple[int, int],
+        screen_width: int,
+        screen_height: int) -> bool:
     x, y = point
     cx = 280 * screen_width / 1600
     cy = 608 * screen_height / 900
@@ -80,7 +89,7 @@ def in_pac_man(point, screen_width, screen_height):
     return pow((x - cx), 2) + pow((y - cy), 2) <= pow(radius, 2)
 
 
-def menu_init(screen):
+def menu_init(screen: pygame.Surface) -> list[Button]:
     screen_width, screen_height = screen.get_size()
     menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
     resized_menu = pygame.transform.scale(
@@ -156,7 +165,10 @@ def menu_init(screen):
             exit_button]
 
 
-def show_menu(screen, cofiguration, fram_clock):
+def show_menu(
+        screen: pygame.Surface,
+        cofiguration: confing,
+        fram_clock: pygame.time.Clock) -> str:
     bottoms = menu_init(screen=screen)
     start_button = bottoms[0]
     high_score_button = bottoms[1]

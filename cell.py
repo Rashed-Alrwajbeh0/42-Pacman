@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any, Optional
+
 import pygame
 
 
@@ -6,63 +10,78 @@ class Cell:
     PACGUM = 1
     SUPER_PACGUM = 2
 
-    def __init__(self, walls: int, content: list[Gum] = [], content_id: int = EMPTY) -> None:
+    def __init__(
+            self,
+            walls: int,
+            content: Optional[Gum] = None,
+            content_id: int = EMPTY) -> None:
         self.north: bool = bool(walls & 1)
         self.east: bool = bool(walls & 2)
         self.south: bool = bool(walls & 4)
         self.west: bool = bool(walls & 8)
         self.is_pattern: bool = (walls == 15)
         self.content_id: int = content_id
-        self.content: list[Gum] = content
-        self.left: int | None = None
-        self.right: int | None = None
-        self.top: int | None = None
-        self.bottom: int | None = None
+        self.content: Optional[Gum] = content
+        self.left: Optional[int] = None
+        self.right: Optional[int] = None
+        self.top: Optional[int] = None
+        self.bottom: Optional[int] = None
 
-    
+
 class Gum:
-    def __init__(self, image, center_pos, points, size):
+    def __init__(
+            self,
+            image: str,
+            center_pos: tuple[int, int],
+            points: int,
+            size: int) -> None:
         self.image = image
         self.center_pos = center_pos
         self.points = points
         self.is_eaten = False
+        self.show = True
         self.size = size
         self.gum = pygame.image.load(image).convert()
         self.resized_gum = pygame.transform.smoothscale(
             self.gum, (self.size, self.size)).convert()
         self.gum_rect = self.resized_gum.get_rect(center=self.center_pos)
 
-    def effect(self, resault):
+    def effect(self, resault: int) -> Any:
         pass
 
-    def draw(self):
+    def draw(self, screen: pygame.Surface) -> Any:
         pass
 
-    def collision(self, point):
+    def collision(self, point: tuple[int, int]) -> bool:
         px, py = point
         gum_x_left = self.gum_rect.left
         gum_x_right = self.gum_rect.right
         gum_y_top = self.gum_rect.top
         gum_y_bottom = self.gum_rect.bottom
-        return (px <= gum_x_right and 
+        return (px <= gum_x_right and
                 px >= gum_x_left and
                 py >= gum_y_top and
                 py <= gum_y_bottom)
 
 
 class Pac_Gum(Gum):
-    def __init__(self, image, center_pos, points, size):
+    def __init__(
+            self,
+            image: str,
+            center_pos: tuple[int, int],
+            points: int,
+            size: int) -> None:
         super().__init__(
             image=image,
             center_pos=center_pos,
             points=points,
             size=size)
 
-    def effect(self, resault):
+    def effect(self, resault: int) -> int:
         self.show = False
         return resault + self.points
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
         if not self.is_eaten:
             pygame.draw.rect(
                 surface=screen,
@@ -72,18 +91,23 @@ class Pac_Gum(Gum):
 
 
 class Super_Pac_Gum(Gum):
-    def __init__(self, image, center_pos, points, size):
+    def __init__(
+            self,
+            image: str,
+            center_pos: tuple[int, int],
+            points: int,
+            size: int) -> None:
         super().__init__(
             image=image,
             center_pos=center_pos,
             points=points,
             size=size)
 
-    def effect(self, resault):
+    def effect(self, resault: int) -> int:
         self.show = False
         return resault + self.points
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
         if not self.is_eaten:
             pygame.draw.rect(
                 surface=screen,
@@ -97,7 +121,7 @@ def where_i_am(
         cell_size: int,
         grid_width: int,
         grid_hight: int,
-        grid_list,
+        grid_list: list[list[Cell]],
         direction: str
         ) -> Cell:
 
@@ -111,11 +135,15 @@ def where_i_am(
 
 
 class PacMan:
-    def __init__(self, pos, screen, cell_size):
+    def __init__(
+            self,
+            pos: tuple[int, int],
+            screen: pygame.Surface,
+            cell_size: int) -> None:
         self.pos = pos
         self.__idx = 0
         self.screen = screen
-        self.__move = []
+        self.__move: list[pygame.Surface] = []
         for i in range(1, 50):
             image = pygame.image.load(
                 f"Pictures/Pacman/move_png/{i}.png").convert()
@@ -124,7 +152,7 @@ class PacMan:
         self.__radius = 0
         self.direction = "right"
 
-    def __desplay(self, pos, rotation):
+    def __desplay(self, pos: tuple[int, int], rotation: int) -> None:
         if self.__idx == 49:
             self.__idx = 0
         image = self.__move[self.__idx]
@@ -134,26 +162,26 @@ class PacMan:
         rect = rotated_image.get_rect(center=pos)
         self.screen.blit(rotated_image, rect.topleft)
 
-    def __set_radius(self, cell_size):
+    def __set_radius(self, cell_size: int) -> None:
         self.__radius = 10
 
-    def __go_right(self, destance):
+    def __go_right(self, destance: int) -> None:
         x, y = self.pos
         self.pos = (x + destance, y)
 
-    def __go_left(self, destance):
+    def __go_left(self, destance: int) -> None:
         x, y = self.pos
         self.pos = (x - destance, y)
 
-    def __go_top(self, destance):
+    def __go_top(self, destance: int) -> None:
         x, y = self.pos
         self.pos = (x, y - destance)
 
-    def __go_bottom(self, destance):
+    def __go_bottom(self, destance: int) -> None:
         x, y = self.pos
         self.pos = (x, y + destance)
 
-    def __wrong_direction(self, destance, current_cell):
+    def __wrong_direction(self, destance: int, current_cell: Cell) -> None:
         if self.direction == "right":
             if not current_cell.east:
                 self.__go_right(destance=destance)
@@ -171,28 +199,28 @@ class PacMan:
                 self.__go_bottom(destance=destance)
                 self.direction = "bottom"
 
-
-    def is_pacmac_inside_cell(self, cell: Cell):
+    def is_pacmac_inside_cell(self, cell: Cell) -> bool:
         x, y = self.pos
+        if (cell.bottom is None or cell.top is None or
+                cell.right is None or cell.left is None):
+            return False
         if (cell.bottom >= y + self.__radius + 4 and
-            cell.top <= y - self.__radius - 4 and
-            cell.right >= x + self.__radius + 5 and
-            cell.left <= x - self.__radius - 5):
+                cell.top <= y - self.__radius - 4 and
+                cell.right >= x + self.__radius + 5 and
+                cell.left <= x - self.__radius - 5):
             if cell.content_id:
-                if not cell.content.is_eaten:
+                if cell.content is not None and not cell.content.is_eaten:
                     cell.content.effect(0)
                     cell.content.show = False
                     cell.content = None
                     cell.content_id = 0
             return True
         return False
-            
 
-
-    def put_pacman_in_cell(self, destance):
+    def put_pacman_in_cell(self, destance: int) -> None:
         if self.direction == "right":
             self.__go_right(destance=destance)
-            self.direction = "right"       
+            self.direction = "right"
         if self.direction == "left":
             self.__go_left(destance=destance)
             self.direction = "left"
@@ -210,8 +238,8 @@ class PacMan:
             destance: int,
             grid_hight: int,
             grid_width: int,
-            size: int):
-        
+            size: int) -> None:
+
         self.__set_radius(size)
         current_cell = where_i_am(
             point=self.pos,
@@ -227,7 +255,7 @@ class PacMan:
             if not current_cell.east:
                 self.__go_right(destance=destance)
                 self.direction = "right"
-                
+
             else:
                 self.__wrong_direction(
                     destance=destance,
@@ -264,7 +292,7 @@ class PacMan:
             destance: int,
             grid_hight: int,
             grid_width: int,
-            size: int):
+            size: int) -> None:
         while destance > 0:
             self.__move_(
                 grid_list=grid_list,
@@ -280,5 +308,5 @@ class PacMan:
             "top": 90,
             "bottom": 270
         }
-        self.__desplay(pos=self.pos, rotation=rotation_map.get(self.direction, 0))
-            
+        self.__desplay(
+            pos=self.pos, rotation=rotation_map.get(self.direction, 0))

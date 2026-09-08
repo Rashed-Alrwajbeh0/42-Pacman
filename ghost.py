@@ -82,8 +82,11 @@ def find_remaining_pacgums(maze: Maze) -> list[position]:
     return positions
 
 
-def seek_nearest_pacgum(maze: Maze, ghost_pos: position, player_pos: position) -> position:
-    """Move the ghost one step towards the nearest remaining pacgum.(player_pos unused)
+def seek_nearest_pacgum(
+        maze: Maze, ghost_pos: position, player_pos: position
+        ) -> position:
+    """Move the ghost one step towards the nearest remaining pacgum.
+    (player_pos unused)
     Step 1: use Manhattan distance as a cheap heuristic to pick a target
              among all remaining pacgums (no walls considered here).
     Step 2: use BFS to find the *real* shortest walkable path to that
@@ -104,8 +107,8 @@ def chase_then_flee(
     """Chase the player via BFS, but flee if they get too close.
      - distance <= flee_distance -> pick the neighbor that maximizes
       distance from the player (flee).
-     - distance  > flee_distance -> follow the BFS shortest path to the
-      player (chase).
+     - distance  > flee_distance -> follow the BFS shortest path to
+      the player (chase).
     """
     distance = manhattan_distance(ghost_pos, player_pos)
 

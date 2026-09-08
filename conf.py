@@ -1,5 +1,7 @@
 from enum import Enum
 import json
+from typing import Any, cast
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -25,7 +27,7 @@ class defaults(Enum):
     Levels = {"height": 25, "width": 25}
 
 
-def error_value_warning(var, data, default):
+def error_value_warning(var: str, data: Any, default: Any) -> None:
     print(
         f'Warning: The {var}\'s value that you enter witch is :"{data}" '
         f"is invalid !! So the default value of {var} "
@@ -33,7 +35,7 @@ def error_value_warning(var, data, default):
     )
 
 
-def non_existing_warning(var, default):
+def non_existing_warning(var: str, default: Any) -> None:
     print(
         f"Warning: You are not enter any value of {var} !!"
         f" So the default value of {var} "
@@ -41,7 +43,11 @@ def non_existing_warning(var, default):
     )
 
 
-def validate_int(var, data, default, min_num = 0):
+def validate_int(
+        var: str,
+        data: Any,
+        default: defaults,
+        min_num: int = 0) -> tuple[int, int]:
     if data is not None and data != "":
         try:
             temp = int(float(data))
@@ -72,11 +78,11 @@ class confing(BaseModel):
     )
     points_per_ghost: int = Field(default=defaults.Points_per_ghost.value)
     level_max_time: int = Field(default=defaults.Level_max_time.value)
-    levels: list[dict[str, int]] = defaults.Levels.value
+    levels: dict[str, int] = defaults.Levels.value
 
     @field_validator("highscore_filename", mode="before")
     @classmethod
-    def highscore_filename_validate(cls, data):
+    def highscore_filename_validate(cls, data: Any) -> str:
         if data is not None:
             temp = str(data).strip()
             data = temp
@@ -87,7 +93,7 @@ class confing(BaseModel):
                     defaults.Highscore_filename.value,
                 )
                 return defaults.Highscore_filename.value
-            return data
+            return cast(str, data)
         non_existing_warning(
             "highscore_filename", defaults.Highscore_filename.value
         )
@@ -95,24 +101,24 @@ class confing(BaseModel):
 
     @field_validator("lives", mode="before")
     @staticmethod
-    def lives_validator(data):
+    def lives_validator(data: Any) -> int:
         return validate_int("lives", data, defaults.Lives)[0]
 
     @field_validator("pacgum", mode="before")
     @staticmethod
-    def pacgum_validator(data):
+    def pacgum_validator(data: Any) -> int:
         return validate_int("pacgum", data, defaults.Pacgum, 3)[0]
 
     @field_validator("points_per_pacgum", mode="before")
     @staticmethod
-    def points_per_pacgum_validate(data):
+    def points_per_pacgum_validate(data: Any) -> int:
         return validate_int(
             "points_per_pacgum", data, defaults.Points_per_pacgum
         )[0]
 
     @field_validator("points_per_super_pacgum", mode="before")
     @staticmethod
-    def points_per_super_pacgum_validator(data):
+    def points_per_super_pacgum_validator(data: Any) -> int:
         return validate_int(
             "points_per_super_pacgum",
             data,
@@ -121,19 +127,19 @@ class confing(BaseModel):
 
     @field_validator("points_per_ghost", mode="before")
     @staticmethod
-    def points_per_ghost_validator(data):
+    def points_per_ghost_validator(data: Any) -> int:
         return validate_int(
             "points_per_ghost", data, defaults.Points_per_ghost
         )[0]
 
     @field_validator("level_max_time", mode="before")
     @staticmethod
-    def level_max_time_validator(data):
+    def level_max_time_validator(data: Any) -> int:
         return validate_int(
             "level_max_time", data, defaults.Level_max_time
         )[0]
 
-    def info(self):
+    def info(self) -> None:
         print(f"highscore_filename : {self.highscore_filename}")
         print(f"lives : {self.lives}")
         print(f"pacgum : {self.pacgum}")
@@ -144,7 +150,7 @@ class confing(BaseModel):
         print(f"levels : {self.levels}")
 
 
-def read_json(FileName):
+def read_json(FileName: str) -> confing:
     try:
         with open(FileName, "r") as file:
             data = dict()

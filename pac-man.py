@@ -9,6 +9,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((1600, 900))
 frame_clock = pygame.time.Clock()
+mode = "menu"
 
 while True:
     for event in pygame.event.get():

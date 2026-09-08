@@ -1,6 +1,8 @@
 import pygame
 import sys
+
 from cell import PacMan
+from conf import confing
 from ghost import next_step_towards, seek_nearest_pacgum, chase_then_flee
 from ghost_entity import Ghost
 from maze import Maze
@@ -9,7 +11,7 @@ from maze import Maze
 current_level = 0
 
 
-def make_level(configuration):
+def make_level(configuration: confing) -> tuple[Maze, int]:
     global current_level
     level_conf = configuration.levels
     print(level_conf)
@@ -30,11 +32,15 @@ def make_level(configuration):
         exit()
 
 
-def draw_background(screen, image_path, alpha=50):
+def draw_background(
+        screen: pygame.Surface,
+        image_path: str,
+        alpha: int = 50) -> None:
     screen.fill((0, 0, 0))
 
     image = pygame.image.load(image_path).convert()
-    resized_image = pygame.transform.smoothscale(image, (1600, 900)).convert_alpha()
+    resized_image = pygame.transform.smoothscale(
+        image, (1600, 900)).convert_alpha()
 
     resized_image.set_alpha(alpha)
     screen.blit(resized_image, (0, 0))
@@ -54,13 +60,16 @@ def where_i_am(
     return answer_y, answer_x
 
 
-def game_play(screen, cofiguration):
+def game_play(screen: pygame.Surface, cofiguration: confing) -> None:
     level_maze, size = make_level(configuration=cofiguration)
     fram_clock = pygame.time.Clock()
     width = cofiguration.levels["width"]
     hight = cofiguration.levels["height"]
     center_cell = level_maze.center_cell()
     level_maze.get_pos((450, 50), size)
+    if (center_cell.left is None or center_cell.right is None or
+            center_cell.top is None or center_cell.bottom is None):
+        raise RuntimeError("center cell position was not computed")
     x = (center_cell.left + center_cell.right) // 2
     y = (center_cell.top + center_cell.bottom) // 2
     pacman = PacMan(
