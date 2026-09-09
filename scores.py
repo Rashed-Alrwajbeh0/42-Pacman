@@ -149,6 +149,8 @@ def show_names_and_scores(screen: pygame.Surface,
     name_x_pos, name_y_pos = 150, 110
     score_x_pos, score_y_pos = 700, 110
     for i in range(number_of_elemts):
+        if i == 20:
+            break
         text = font.render(names[i], False, "white")
         screen.blit(text, (name_x_pos, name_y_pos))
         text = font.render(f"{Scores[i]}", False, "white")
