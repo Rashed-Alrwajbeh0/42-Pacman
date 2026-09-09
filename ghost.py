@@ -1,9 +1,10 @@
-"""Ghost movement : BFS pathfinding and two chase behaviors.
+"""Ghost movement : BFS pathfinding and chase/flee/random behaviors.
 This module is deliberately decoupled from pygame: it only reasons about
 grid positions (x, y) and the Maze/Cell data structures. The actual
 rendering/movement interpolation stays in your Ghost/sprite class.
 """
 
+import random
 from collections import deque
 from typing import Optional
 
@@ -15,7 +16,7 @@ FLEE_DISTANCE_THRESHOLD = 4
 
 
 def manhattan_distance(a: position, b: position) -> int:
-    """Return the Manhattan (grid) distance between two positions"""
+    """Return the Manhattan (grid) distance between two positions."""
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
@@ -67,6 +68,25 @@ def flee_towards_farthest_neighbor(
     return max(neighbors, key=lambda n: manhattan_distance(n, threat_pos))
 
 
+def random_walk(
+        maza: Maze, ghost_pos: position, player_pos: position
+        ) -> position:
+    """Move the ghost to a random walkable neighbor cell.
+
+    Args:
+        maza: The current Maze, used to find walkable neighbors.
+        ghost_pos: The ghost's current (x, y) grid position.
+        player_pos: Unused (kept for a consistent behavior signature).
+
+    Returns:
+        A randomly chosen neighbor cell, or ghost_pos if it has none.
+    """
+    neighbors = maza.neighbors(*ghost_pos)
+    if not neighbors:
+        return ghost_pos
+    return random.choice(neighbors)
+
+
 def find_remaining_pacgums(maze: Maze) -> list[position]:
     """Scan the grid and return positions of all remaining pacgums
     NOTE: this is O(width * height). For large mazes, prefer maintaining
@@ -76,27 +96,23 @@ def find_remaining_pacgums(maze: Maze) -> list[position]:
     positions: list[position] = []
     for y in range(maze.height):
         for x in range(maze.width):
-            if maze.grid[y][x].content_id in (Cell.PACGUM, Cell.SUPER_PACGUM):
+            content_id = maze.grid[y][x].content_id
+            if content_id in (Cell.PACGUM, Cell.SUPER_PACGUM):
                 positions.append((x, y))
     return positions
 
 
-def seek_nearest_pacgum(
+def seek_pacgum_near_player(
         maze: Maze, ghost_pos: position, player_pos: position
-        ) -> position:
-    """Move the ghost one step towards the nearest remaining pacgum.
-    (player_pos unused)
-    Step 1: use Manhattan distance as a cheap heuristic to pick a target
-             among all remaining pacgums (no walls considered here).
-    Step 2: use BFS to find the *real* shortest walkable path to that
-             target, and return the first step of that path.
-    """
+) -> position:
+    """Move ghost towards the pacgum that is closest to the player."""
     targets = find_remaining_pacgums(maze)
     if not targets:
         return ghost_pos
-    nearest_target = min(
-            targets, key=lambda t: manhattan_distance(ghost_pos, t))
-    return next_step_towards(maze, ghost_pos, nearest_target)
+    
+    best_gum = min(targets, key=lambda gum: manhattan_distance(gum, player_pos))
+    
+    return next_step_towards(maze, ghost_pos, best_gum)
 
 
 def chase_then_flee(
