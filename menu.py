@@ -35,7 +35,7 @@ class Button:
         self.image_border_color = "white"
         if image is not None:
             self.image = pygame.image.load(image)
-            self.resized_image = pygame.transform.smoothscale(
+            self.resized_image = pygame.transform.scale(
                 self.image, (50, 50))
         self.button_rec = pygame.Rect(
                 self.pos[0], self.pos[1], self.width, self.height)
@@ -43,7 +43,9 @@ class Button:
     def draw(
             self,
             screen: pygame.Surface,
-            image_pos: Optional[tuple[int, int]] = None) -> None:
+            image_pos: Optional[tuple[int, int]] = None,
+            image_color="white",
+            radius=15) -> None:
         font = pygame.font.Font(self.font, size=self.font_size)
         button_text = font.render(self.text, False, self.font_color)
         button_text_rec = button_text.get_rect(
@@ -59,10 +61,10 @@ class Button:
             self.image_rect = self.resized_image.get_rect(center=image_pos)
             pygame.draw.rect(
                 surface=screen,
-                color="white",
+                color=image_color,
                 rect=self.image_rect,
                 width=0,
-                border_radius=15
+                border_radius=radius
             )
             screen.blit(self.resized_image, self.image_rect)
 
@@ -90,7 +92,7 @@ def in_pac_man(
 
 
 def menu_init(screen: pygame.Surface) -> list[Button]:
-    screen_width, screen_height = screen.get_size()
+    screen_width, screen_height = 1600, 900
     menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
     resized_menu = pygame.transform.scale(
         menu_image, (screen_width, screen_height))

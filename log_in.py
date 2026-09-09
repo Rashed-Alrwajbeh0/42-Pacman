@@ -59,7 +59,7 @@ class Field:
             border_color: str,
             border_radius: int,
             font_color: str,
-            font_type: str = "fonts/login.ttf",
+            font_type: str = "fonts/1.ttf",
             font_size: int = 40) -> None:
 
         self.pos = pos
@@ -79,8 +79,8 @@ class Field:
         self.text = ""
         self.font_color = font_color
         self.field_font_type = pygame.font.Font(
-            filename=font_type,
-            size=font_size)
+            font_type,
+            font_size)
 
     def collision(self, point: tuple[int, int]) -> bool:
         px, py = point
@@ -137,7 +137,7 @@ class Field:
 def show_error(screen: pygame.Surface, text: str,
                pos: tuple[int, int]) -> None:
 
-    font = pygame.font.Font("fonts/login.ttf", size=20)
+    font = pygame.font.Font("fonts/1.ttf", size=20)
     text_in_font = font.render(text, False, "red")
     screen.blit(text_in_font, pos)
 
@@ -155,7 +155,7 @@ def use_name_field(
         text_width: int,
         frame_clock: pygame.time.Clock) -> None:
     if show_field:
-        font = pygame.font.Font("fonts/login.ttf", size=20)
+        font = pygame.font.Font("fonts/1.ttf", size=20)
         text_in_font = font.render(text, False, "white")
         screen.blit(text_in_font, text_pos)
         field.draw(screen)
@@ -186,7 +186,7 @@ def create_name_field(
         text_width: int,
         frame_clock: pygame.time.Clock) -> None:
     if show_field:
-        font = pygame.font.Font("fonts/login.ttf", size=20)
+        font = pygame.font.Font("fonts/1.ttf", size=20)
         text_in_font = font.render(text, False, "white")
         screen.blit(text_in_font, text_pos)
         field.draw(screen)
