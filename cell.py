@@ -122,12 +122,15 @@ def where_i_am(
         grid_width: int,
         grid_hight: int,
         grid_list: list[list[Cell]],
-        origin: tuple[int, int] = (450, 50)
-) -> Cell:
-    ox, oy = origin
-    Px, Py = point[0] - ox, point[1] - oy
-    answer_x = max(0, min(grid_width - 1, Px // cell_size))
-    answer_y = max(0, min(grid_hight - 1, Py // cell_size))
+        direction: str
+        ) -> Cell:
+
+    Px, Py = point
+
+    Px -= 450
+    Py -= 50
+    answer_x = Px // cell_size
+    answer_y = Py // cell_size
     return grid_list[answer_y][answer_x]
 
 
@@ -136,12 +139,13 @@ class PacMan:
             self,
             pos: tuple[int, int],
             screen: pygame.Surface,
-            cell_size: int) -> None:
+            cell_size: int,
+            lives: int) -> None:
         self.pos = pos
         self.__idx = 0
+        self.lives = lives
+        self.__center_pos = pos
         self.screen = screen
-        self.last_gum_type: Optional[type] = None
-        self.last_points: int = 0
         self.__move: list[pygame.Surface] = []
         for i in range(1, 50):
             image = pygame.image.load(
@@ -209,8 +213,7 @@ class PacMan:
                 cell.left <= x - self.__radius - 5):
             if cell.content_id:
                 if cell.content is not None and not cell.content.is_eaten:
-                    self.last_points = cell.content.effect(0)
-                    self.last_gum_type = type(cell.content)
+                    cell.content.effect(0)
                     cell.content.show = False
                     cell.content = None
                     cell.content_id = 0
@@ -247,9 +250,10 @@ class PacMan:
             grid_width=grid_width,
             grid_hight=grid_hight,
             grid_list=grid_list,
-            )
-
-        self.is_pacmac_inside_cell(cell=current_cell)
+            direction=direction)
+        if not self.is_pacmac_inside_cell(cell=current_cell):
+            self.put_pacman_in_cell(destance=destance)
+            return
         if direction == "right":
             if not current_cell.east:
                 self.__go_right(destance=destance)

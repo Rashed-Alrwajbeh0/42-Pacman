@@ -1,7 +1,7 @@
 import pygame
 from math import pow
 from typing import Optional
-
+from scores import show_score
 from game import game_play
 from conf import confing
 from sys import exit
@@ -35,36 +35,36 @@ class Button:
         self.image_border_color = "white"
         if image is not None:
             self.image = pygame.image.load(image)
-            self.resized_image = pygame.transform.smoothscale(
+            self.resized_image = pygame.transform.scale(
                 self.image, (50, 50))
         self.button_rec = pygame.Rect(
                 self.pos[0], self.pos[1], self.width, self.height)
 
-    def draw(self, screen: pygame.Surface) -> None:
-        font = pygame.font.Font(self.font, self.font_size)
+    def draw(
+            self,
+            screen: pygame.Surface,
+            image_pos: Optional[tuple[int, int]] = None,
+            image_color="white",
+            radius=15) -> None:
+        font = pygame.font.Font(self.font, size=self.font_size)
         button_text = font.render(self.text, False, self.font_color)
-        button_text_rec = button_text.get_rect(center=(self.button_rec.center))
-        
+        button_text_rec = button_text.get_rect(
+            center=(self.button_rec.center))
         pygame.draw.rect(
-            surface=screen,
-            color=self.border_color,
-            rect=(self.pos[0], self.pos[1], self.width, self.height),
-            width=self.border,
-            border_radius=self.border_radius)
-        
+                surface=screen,
+                color=self.border_color,
+                rect=(self.pos[0], self.pos[1], self.width, self.height),
+                width=self.border,
+                border_radius=self.border_radius)
         screen.blit(button_text, button_text_rec)
-
-        if hasattr(self, 'resized_image'):
-            icon_x = self.button_rec.left + self.height // 2 + 10
-            icon_y = self.button_rec.centery
-            self.image_rect = self.resized_image.get_rect(center=(icon_x, icon_y))
-            
+        if image_pos:
+            self.image_rect = self.resized_image.get_rect(center=image_pos)
             pygame.draw.rect(
                 surface=screen,
-                color="white",
+                color=image_color,
                 rect=self.image_rect,
                 width=0,
-                border_radius=15
+                border_radius=radius
             )
             screen.blit(self.resized_image, self.image_rect)
 
@@ -92,7 +92,7 @@ def in_pac_man(
 
 
 def menu_init(screen: pygame.Surface) -> list[Button]:
-    screen_width, screen_height = screen.get_size()
+    screen_width, screen_height = 1600, 900
     menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
     resized_menu = pygame.transform.scale(
         menu_image, (screen_width, screen_height))
@@ -183,18 +183,18 @@ def show_menu(
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-        start_button.draw(screen)
-        high_score_button.draw(screen)
-        controls_button.draw(screen)
-        setting_button.draw(screen)
-        exit_button.draw(screen)
+        start_button.draw(screen, (620, 367))
+        high_score_button.draw(screen, (620, 450))
+        controls_button.draw(screen, (620, 527))
+        setting_button.draw(screen, (620, 607))
+        exit_button.draw(screen, (620, 687))
 
         if pygame.mouse.get_pressed()[0]:
             mouse_point = pygame.mouse.get_pos()
             if start_button.collision(mouse_point):
                 game_play(screen=screen, cofiguration=cofiguration)
             elif high_score_button.collision(mouse_point):
-                return "score"
+                show_score(screen=screen, conf=confing)
             elif controls_button.collision(mouse_point):
                 return "controls"
             elif setting_button.collision(mouse_point):

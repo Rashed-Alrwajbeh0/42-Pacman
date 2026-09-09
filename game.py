@@ -266,7 +266,7 @@ def draw_hud(
     time_text = small_font.render(
         f"{max(int(time_left), 0)}s", True, _HUD_TEXT)
     screen.blit(time_text, (bar_bg.right - time_text.get_width(),
-                             time_box.top + 10))
+                            time_box.top + 10))
     y = time_box.bottom + 16
 
     controls_y = panel_rect.bottom - 90
@@ -275,6 +275,7 @@ def draw_hud(
     controls_text = small_font.render(
         "Arrows / WASD to move", True, _HUD_TEXT)
     screen.blit(controls_text, (inner_x, controls_y + 26))
+
 
 def game_play(
         screen: pygame.Surface, cofiguration: confing) -> tuple[str, int]:
@@ -302,7 +303,7 @@ def game_play(
         raise RuntimeError("center cell position was not computed")
     x = (center_cell.left + center_cell.right) // 2
     y = (center_cell.top + center_cell.bottom) // 2
-    pacman = PacMan(pos=(x, y), screen=screen, cell_size=size)
+    pacman = PacMan(pos=(x, y), screen=screen, cell_size=size, lives=3)
 
     corners = [
         (0, 0),
@@ -325,7 +326,7 @@ def game_play(
                 sys.exit()
 
         draw_background(screen=screen, image_path=BACKGROUND_IMAGE)
-        level_maze.draw(screen, size, origin, wall_color=WALL_COLOR)
+        level_maze.draw(screen, size, origin)
 
         keyboard = pygame.key.get_pressed()
         if keyboard[pygame.K_UP]:

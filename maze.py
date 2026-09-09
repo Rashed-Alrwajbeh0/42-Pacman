@@ -1,21 +1,12 @@
-from random import randint
 from typing import Optional
 
 import pygame
 from mazegenerator import MazeGenerator
-
 from cell import Cell, Gum, Pac_Gum, Super_Pac_Gum
+from random import randint
 
 
 class Maze:
-    """A Pac-Man compatible maze built from an external generator.
-
-    Attributes:
-        width: Number of columns.
-        height: Number of rows.
-        grid: 2D grid of Cell objects, indexed as grid[y][x] (row, col).
-    """
-
     def __init__(
             self, width: int, height: int,
             number_of_gums: int, seed: int = 0,
@@ -42,12 +33,7 @@ class Maze:
         self._place_content(number_of_gums)
 
     def _place_content(self, number_of_gums: int) -> None:
-        """Place the 4 super-pacgums in the corners and scatter pacgums.
 
-        Args:
-            number_of_gums: Number of regular pacgums to place, in
-                addition to the four fixed super-pacgums.
-        """
         corners = [
             (0, 0),
             (self.width - 1, 0),
@@ -55,30 +41,40 @@ class Maze:
             (self.width - 1, self.height - 1),
         ]
         for x, y in corners:
-            self.grid[y][x].content_id = Cell.SUPER_PACGUM
-
-        placed = 0
-        attempts = 0
-        max_attempts = max(number_of_gums * 50, 200)
-
-        while placed < number_of_gums and attempts < max_attempts:
-            attempts += 1
+            self.grid[x][y].content_id = Cell.SUPER_PACGUM
+        x_choise = [0, self.width - 1]
+        y_choise = [0, self.height - 1]
+        # number_of_gums += 1
+        while (number_of_gums > 4):
             x = randint(0, self.width - 1)
             y = randint(0, self.height - 1)
-            if (x, y) in corners:
-                continue
-            cell = self.grid[y][x]
-            if cell.is_pattern or cell.content_id != Cell.EMPTY:
-                continue
-            cell.content_id = Cell.PACGUM
-            placed += 1
+
+            while (self.grid[x][y].is_pattern):
+                if (x == self.width - 1):
+                    break
+                elif (y == self.height - 1):
+                    break
+                elif (x == 0 and y not in y_choise):
+                    break
+                elif (y == 0 and x not in x_choise):
+                    break
+                if (x in x_choise or y in y_choise):
+                    x = randint(0, self.width - 1)
+                    y = randint(0, self.height - 1)
+                else:
+                    if (not self.grid[x][y].is_pattern):
+                        break
+                    else:
+                        x = randint(0, self.width - 1)
+                        y = randint(0, self.height - 1)
+            if ((x, y) not in corners):
+                self.grid[x][y].content_id = Cell.PACGUM
+                number_of_gums -= 1
 
     def center_cell(self) -> Cell:
-        """Return the cell at the logical center of the maze."""
-        return self.grid[self.height // 2][self.width // 2]
+        return self.grid[self.width // 2][self.height // 2]
 
     def remaining_pacgums(self) -> int:
-        """Count how many pacgums/super-pacgums are still uneaten."""
         count = 0
         for row in self.grid:
             for cell in row:
@@ -87,7 +83,7 @@ class Maze:
         return count
 
     def neighbors(self, x: int, y: int) -> list[tuple[int, int]]:
-        """Return walkable neighbor cells (no wall blocking) from (x, y)."""
+        """Return walkable neighbor cells (no wall blocking) from (x, y)"""
         cell = self.grid[y][x]
         result: list[tuple[int, int]] = []
         if not cell.north and y > 0:
@@ -101,15 +97,13 @@ class Maze:
         return result
 
     def eat_at(self, x: int, y: int) -> Optional[Gum]:
-        """Consume the content at (x, y) and return it (None if empty)."""
+        """Consume the content at (x, y) and return it (0 if empty)"""
         cell = self.grid[y][x]
         content = cell.content
         cell.content = None
         return content
 
     def cell_size_for(self, area_width: int, area_height: int) -> int:
-        """Return the largest square cell size that fits this maze in
-        the given pixel area."""
         size = min(area_width // self.width, area_height // self.height)
         return max(size, 1)
 
@@ -117,7 +111,6 @@ class Maze:
             self,
             origin: tuple[int, int],
             cell_size: int) -> None:
-        """Compute and store each cell's pixel bounding box."""
         ox, oy = origin
         for y in range(self.height):
             for x in range(self.width):
@@ -132,44 +125,30 @@ class Maze:
             self,
             cell_size: int,
             origin: tuple[int, int]) -> None:
-        """Instantiate Gum sprite objects for every gum cell."""
         ox, oy = origin
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.grid[y][x]
                 px, py = ox + x * cell_size, oy + y * cell_size
-                center = (px + cell_size // 2, py + cell_size // 2)
                 if cell.content_id == Cell.PACGUM:
                     cell.content = Pac_Gum(
                         image="Pictures/gums/gum.png",
-                        center_pos=center,
+                        center_pos=(px + cell_size // 2, py + cell_size // 2),
                         points=50,
-                        size=max(cell_size // 6, 3),
+                        size=5
                     )
                 elif cell.content_id == Cell.SUPER_PACGUM:
                     cell.content = Super_Pac_Gum(
                         image="Pictures/gums/gum.png",
-                        center_pos=center,
+                        center_pos=(px + cell_size // 2, py + cell_size // 2),
                         points=50,
-                        size=max(cell_size // 2, 6),
+                        size=15
                     )
 
     def draw(self, screen: pygame.Surface, cell_size: int,
-             origin: tuple[int, int] = (0, 0),
-             wall_color: tuple[int, int, int] = (0, 209, 255),
-             wall_thickness: int = 3) -> list[list[Cell]]:
-        """Draw walls and gums, refreshing each cell's pixel bounds.
-
-        Args:
-            screen: Surface to draw on.
-            cell_size: Size in pixels of one maze cell.
-            origin: (x, y) pixel offset of the maze's top-left corner.
-            wall_color: RGB color used for the maze walls. Defaults to an
-                electric cyan (change this, or pass your own, to reskin
-                the maze).
-            wall_thickness: Line thickness in pixels for the walls.
-        """
+             origin: tuple[int, int] = (0, 0)) -> list[list[Cell]]:
         ox, oy = origin
+        wall_color = (255, 255, 51)
 
         for y in range(self.height):
             for x in range(self.width):
@@ -183,23 +162,25 @@ class Maze:
                 if cell.north:
                     pygame.draw.line(
                         screen, wall_color,
-                        (px, py), (px + cell_size, py), wall_thickness)
+                        (px, py), (px + cell_size, py), 2)
                 if cell.south:
                     pygame.draw.line(
                         screen, wall_color,
                         (px, py + cell_size),
-                        (px + cell_size, py + cell_size), wall_thickness)
+                        (px + cell_size, py + cell_size), 2)
                 if cell.west:
                     pygame.draw.line(
                         screen, wall_color,
-                        (px, py), (px, py + cell_size), wall_thickness)
+                        (px, py), (px, py + cell_size), 2)
                 if cell.east:
                     pygame.draw.line(
                         screen, wall_color,
                         (px + cell_size, py),
-                        (px + cell_size, py + cell_size), wall_thickness)
+                        (px + cell_size, py + cell_size), 2)
 
-                if cell.content is not None and cell.content_id in (
-                        Cell.PACGUM, Cell.SUPER_PACGUM):
+                if cell.content_id == Cell.PACGUM and cell.content is not None:
+                    cell.content.draw(screen)
+                elif (cell.content_id == Cell.SUPER_PACGUM
+                        and cell.content is not None):
                     cell.content.draw(screen)
         return self.grid

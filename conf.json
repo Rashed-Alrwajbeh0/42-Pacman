@@ -1,7 +1,7 @@
 {
     "highscore_filename": "out",
-    "lives": 3,
-    "pacgum": 60,
+    "lives": 1,
+    "pacgum": 4,
     "points_per_pacgum": 10,
     "points_per_ghost": 200,
     "level_max_time": 120,
