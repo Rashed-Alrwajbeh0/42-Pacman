@@ -278,7 +278,9 @@ def draw_hud(
 
 
 def game_play(
-        screen: pygame.Surface, cofiguration: confing) -> tuple[str, int]:
+        screen: pygame.Surface,
+        cofiguration: confing,
+        direction_key: dict[str, pygame.Event]) -> tuple[str, int]:
     """Run one full game session and return ("win"/"lose", final_score)."""
     origin = MAZE_ORIGIN
     window_width, window_height = screen.get_size()
@@ -329,13 +331,13 @@ def game_play(
         level_maze.draw(screen, size, origin)
 
         keyboard = pygame.key.get_pressed()
-        if keyboard[pygame.K_UP]:
+        if keyboard[direction_key["top"]]:
             direction = "top"
-        elif keyboard[pygame.K_DOWN]:
+        elif keyboard[direction_key["down"]]:
             direction = "bottom"
-        elif keyboard[pygame.K_RIGHT]:
+        elif keyboard[direction_key["right"]]:
             direction = "right"
-        elif keyboard[pygame.K_LEFT]:
+        elif keyboard[direction_key["left"]]:
             direction = "left"
         pacman.move(
             grid_hight=hight,

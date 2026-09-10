@@ -1,8 +1,6 @@
 import pygame
 from math import pow
 from typing import Optional
-from scores import show_score
-from game import game_play
 from conf import confing
 from sys import exit
 
@@ -93,10 +91,6 @@ def in_pac_man(
 
 def menu_init(screen: pygame.Surface) -> list[Button]:
     screen_width, screen_height = 1600, 900
-    menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
-    resized_menu = pygame.transform.scale(
-        menu_image, (screen_width, screen_height))
-    screen.blit(resized_menu, (0, 0))
 
     sx = screen_width / 1600
     sy = screen_height / 900
@@ -178,30 +172,56 @@ def show_menu(
     setting_button = bottoms[3]
     exit_button = bottoms[4]
     screen_width, screen_height = screen.get_size()
+    controls_key = {
+        "top": pygame.K_UP,
+        "down": pygame.K_DOWN,
+        "left": pygame.K_LEFT,
+        "right": pygame.K_RIGHT
+    }
+    controls_leters = {
+        "top": "Top",
+        "left": "Left",
+        "right": "Right",
+        "down": "Down"
+    }
+    menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
+    resized_menu = pygame.transform.scale(
+        menu_image, (screen_width, screen_height))
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
+        screen.blit(resized_menu, (0, 0))
         start_button.draw(screen, (620, 367))
         high_score_button.draw(screen, (620, 450))
         controls_button.draw(screen, (620, 527))
-        setting_button.draw(screen, (620, 607))
+        setting_button.draw(screen,(620, 607))
         exit_button.draw(screen, (620, 687))
 
-        if pygame.mouse.get_pressed()[0]:
+        if pygame.mouse.get_just_pressed()[0]:
             mouse_point = pygame.mouse.get_pos()
             if start_button.collision(mouse_point):
-                game_play(screen=screen, cofiguration=cofiguration)
+                from game import game_play
+                game_play(screen=screen, cofiguration=cofiguration, direction_key=controls_key)
             elif high_score_button.collision(mouse_point):
+                from scores import show_score
                 show_score(screen=screen, conf=confing)
             elif controls_button.collision(mouse_point):
-                return "controls"
+                from controls import show_controls
+                print(controls_leters)
+                controls_key, controls_leters2= show_controls(
+                    screen=screen,
+                    frame_clock=fram_clock,
+                    font_path="fonts/1.ttf",
+                    field_containers=controls_leters,
+                    movimg_dict=controls_key)
+                print(controls_leters)
+                print("-------------")
             elif setting_button.collision(mouse_point):
                 return "sitting"
             elif exit_button.collision(mouse_point):
                 exit()
-            return "menu"
         elif pygame.mouse.get_pressed()[2]:
             mouse_point = pygame.mouse.get_pos()
             if in_pac_man(mouse_point, screen_width, screen_height):
