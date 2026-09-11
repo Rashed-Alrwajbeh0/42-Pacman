@@ -13,6 +13,7 @@ from maze import Maze
 
 position = tuple[int, int]
 FLEE_DISTANCE_THRESHOLD = 4
+PLAYER_BASE_SPEED = 120.0 
 
 
 def manhattan_distance(a: position, b: position) -> int:
@@ -105,13 +106,21 @@ def find_remaining_pacgums(maze: Maze) -> list[position]:
 def seek_pacgum_near_player(
         maze: Maze, ghost_pos: position, player_pos: position
 ) -> position:
-    """Move ghost towards the pacgum that is closest to the player."""
+    """Move ghost towards the pacgum closest to the player.
+
+    Falls back to chasing the player directly once the ghost reaches
+    its target gum (so it doesn't freeze camping on the last cell) or
+    when no gums remain at all.
+    """
     targets = find_remaining_pacgums(maze)
     if not targets:
-        return ghost_pos
-    
+        return next_step_towards(maze, ghost_pos, player_pos)
+
     best_gum = min(targets, key=lambda gum: manhattan_distance(gum, player_pos))
-    
+
+    if ghost_pos == best_gum:
+        return next_step_towards(maze, ghost_pos, player_pos)
+
     return next_step_towards(maze, ghost_pos, best_gum)
 
 
@@ -131,3 +140,18 @@ def chase_then_flee(
         return flee_towards_farthest_neighbor(maze, ghost_pos, player_pos)
 
     return next_step_towards(maze, ghost_pos, player_pos)
+
+
+def ghost_speed_for_level(
+        level: int,
+        base_speed: float = PLAYER_BASE_SPEED,
+        increment: float = 12.0,
+        max_speed: float = 200.0,
+) -> float:
+    """Compute ghost speed for a given level.
+
+    Level 1 matches the player's speed exactly; each subsequent level
+    adds `increment` px/sec, capped at `max_speed` so late levels stay
+    winnable instead of becoming impossible.
+    """
+    return min(base_speed + increment * max(level - 1, 0), max_speed)

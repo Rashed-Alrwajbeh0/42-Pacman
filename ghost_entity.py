@@ -19,6 +19,7 @@ class Ghoststate(Enum):
     Chasing = auto()
     Edible = auto()
     Eaten = auto()
+    Waiting = auto()
 
 
 class Ghost:
@@ -145,7 +146,9 @@ class Ghost:
                 self.target_pos = self.corner
                 self.pixel_pos = self._cell_center(
                     self.corner, cell_size, origin)
-                self.state = Ghoststate.Chasing
+                self.state = Ghoststate.Waiting
+            return
+        if self.state == Ghoststate.Waiting:
             return
 
         if self.pixel_pos is None:
@@ -158,7 +161,6 @@ class Ghost:
         pixel_x, pixel_y = self.pixel_pos
         delta_x, delta_y = target_x - pixel_x, target_y - pixel_y
 
-        # Frame-rate independent step: pixels/second * seconds elapsed.
         step = self.speed * dt
 
         if abs(delta_x) <= step and abs(delta_y) <= step:
@@ -215,11 +217,9 @@ class Ghost:
         """Draw the classic dome-plus-wavy-skirt ghost silhouette."""
         cx, cy = center
 
-        # Dome (the polygon skirt below overlaps its lower half).
         pygame.draw.circle(
             screen, color, (round(cx), round(cy)), round(radius))
-
-        # Wavy skirt across the lower half of the body.
+        
         bumps = 4
         step = (2 * radius) / bumps
         points: list[tuple[float, float]] = [(cx - radius, cy)]
@@ -251,8 +251,7 @@ class Ghost:
 
         radius = max(cell_size / 2 - 2, 4.0)
 
-        if self.state == Ghoststate.Eaten:
-            # Classic look: only the eyes travel back home.
+        if self.state in (Ghoststate.Eaten, Ghoststate.Waiting):
             self._draw_eyes(
                 screen, self.pixel_pos, radius, pupils=False)
             return

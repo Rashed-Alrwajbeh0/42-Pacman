@@ -5,7 +5,7 @@ import pygame
 from cell import PacMan, Super_Pac_Gum
 from conf import confing
 from ghost import (
-    chase_then_flee, next_step_towards, random_walk, seek_pacgum_near_player,
+    chase_then_flee, next_step_towards, ghost_speed_for_level, random_walk, seek_pacgum_near_player,
 )
 from ghost_entity import Ghost, Ghoststate
 from maze import Maze
@@ -45,7 +45,7 @@ def check_ghost_collisions(
     px, py = pacman.pos
 
     for ghost in ghosts:
-        if ghost.state == Ghoststate.Eaten:
+        if ghost.state in (Ghoststate.Eaten, Ghoststate.Waiting):
             continue
         if ghost.pixel_pos is None:
             continue
@@ -280,7 +280,7 @@ def draw_hud(
 def game_play(
         screen: pygame.Surface,
         cofiguration: confing,
-        direction_key: dict[str, pygame.Event]) -> tuple[str, int]:
+        direction_key: dict[str, int]) -> tuple[str, int]:
     """Run one full game session and return ("win"/"lose", final_score)."""
     origin = MAZE_ORIGIN
     window_width, window_height = screen.get_size()
@@ -305,7 +305,7 @@ def game_play(
         raise RuntimeError("center cell position was not computed")
     x = (center_cell.left + center_cell.right) // 2
     y = (center_cell.top + center_cell.bottom) // 2
-    pacman = PacMan(pos=(x, y), screen=screen, cell_size=size, lives=3)
+    pacman = PacMan(pos=(x, y), screen=screen, cell_size=size)
 
     corners = [
         (0, 0),
@@ -313,11 +313,13 @@ def game_play(
         (0, level_maze.height - 1),
         (level_maze.width - 1, level_maze.height - 1),
     ]
+
+    ghost_speed = ghost_speed_for_level(current_level)
     ghosts = [
-        Ghost(corners[0], corners[0], (255, 0, 0), chase_then_flee),
-        Ghost(corners[1], corners[1], (255, 165, 0), next_step_towards),
-        Ghost(corners[2], corners[2], (255, 105, 180), seek_pacgum_near_player),
-        Ghost(corners[3], corners[3], (0, 200, 255), random_walk),
+        Ghost(corners[0], corners[0], (255, 0, 0), chase_then_flee, speed=ghost_speed),
+        Ghost(corners[1], corners[1], (255, 165, 0), next_step_towards, speed=ghost_speed),
+        Ghost(corners[2], corners[2], (255, 105, 180), seek_pacgum_near_player, speed=ghost_speed),
+        Ghost(corners[3], corners[3], (0, 200, 255), random_walk, speed=ghost_speed),
     ]
     collision_radius = max(size / 2, 12.0)
 
@@ -367,9 +369,9 @@ def game_play(
 
         if edible_timer > 0:
             edible_timer -= dt
-            if edible_timer <= 0:
-                for ghost in ghosts:
-                    if ghost.state == Ghoststate.Edible:
+        
+        for ghost in ghosts:
+            if edible_timer <= 0 and ghost.state in (Ghoststate.Edible, Ghoststate.Waiting):
                         ghost.state = Ghoststate.Chasing
 
         player_cell = where_i_am(
