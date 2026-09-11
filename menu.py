@@ -210,7 +210,7 @@ def show_menu(
             elif controls_button.collision(mouse_point):
                 from controls import show_controls
                 print(controls_leters)
-                controls_key, controls_leters2= show_controls(
+                controls_key, controls_leters = show_controls(
                     screen=screen,
                     frame_clock=fram_clock,
                     font_path="fonts/1.ttf",
@@ -225,6 +225,7 @@ def show_menu(
         elif pygame.mouse.get_pressed()[2]:
             mouse_point = pygame.mouse.get_pos()
             if in_pac_man(mouse_point, screen_width, screen_height):
-                print(1)
+                from game import game_play
+                game_play(screen=screen, cofiguration=cofiguration, direction_key=controls_key, cheat=True)
         pygame.display.update()
         fram_clock.tick(60)

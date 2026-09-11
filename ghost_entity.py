@@ -129,6 +129,7 @@ class Ghost:
             dt: float,
             cell_size: int,
             origin: Position,
+            speed: int
     ) -> None:
         """Update the ghost's position and state for one game tick.
 
@@ -161,7 +162,7 @@ class Ghost:
         pixel_x, pixel_y = self.pixel_pos
         delta_x, delta_y = target_x - pixel_x, target_y - pixel_y
 
-        step = self.speed * dt
+        step = speed * dt
 
         if abs(delta_x) <= step and abs(delta_y) <= step:
             self.pixel_pos = (target_x, target_y)

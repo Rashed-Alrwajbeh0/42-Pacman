@@ -301,8 +301,7 @@ def show_controls(
             if event.type == pygame.QUIT:
                 exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return
+
                 if event.key == pygame.K_BACKSPACE:
                     leter_id = -1
                 elif event.key == pygame.K_RETURN:

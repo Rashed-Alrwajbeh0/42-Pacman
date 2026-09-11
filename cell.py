@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 from typing import Any, Optional
-
 import pygame
 
 
@@ -45,9 +43,6 @@ class Gum:
         self.resized_gum = pygame.transform.smoothscale(
             self.gum, (self.size, self.size)).convert()
         self.gum_rect = self.resized_gum.get_rect(center=self.center_pos)
-
-    def effect(self, resault: int) -> Any:
-        pass
 
     def draw(self, screen: pygame.Surface) -> Any:
         pass
@@ -211,12 +206,6 @@ class PacMan:
                 cell.top <= y - self.__radius - 4 and
                 cell.right >= x + self.__radius + 5 and
                 cell.left <= x - self.__radius - 5):
-            if cell.content_id:
-                if cell.content is not None and not cell.content.is_eaten:
-                    cell.content.effect(0)
-                    cell.content.show = False
-                    cell.content = None
-                    cell.content_id = 0
             return True
         return False
 
@@ -313,3 +302,10 @@ class PacMan:
         }
         self.__desplay(
             pos=self.pos, rotation=rotation_map.get(self.direction, 0))
+
+    def reset_atfer_eaten(self, cheat=0):
+        if not cheat:
+            self.lives -= 1
+            if self.lives == 0:
+                raise ValueError("Finish Lives")
+            self.pos = self.__center_pos
