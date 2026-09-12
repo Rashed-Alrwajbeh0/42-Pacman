@@ -3,7 +3,7 @@ from typing import Optional
 import pygame
 from mazegenerator import MazeGenerator
 from cell import Cell, Gum, Pac_Gum, Super_Pac_Gum
-from random import randint
+from random import randint, seed
 
 
 class Maze:
@@ -33,7 +33,7 @@ class Maze:
         self._place_content(number_of_gums)
 
     def _place_content(self, number_of_gums: int) -> None:
-
+        seed(None)
         corners = [
             (0, 0),
             (self.width - 1, 0),
@@ -42,34 +42,22 @@ class Maze:
         ]
         for x, y in corners:
             self.grid[x][y].content_id = Cell.SUPER_PACGUM
-        x_choise = [0, self.width - 1]
-        y_choise = [0, self.height - 1]
+        x_choise = {0, self.width - 1}
+        y_choise = {0, self.height - 1}
         # number_of_gums += 1
+        if number_of_gums > 607:
+            number_of_gums = 607
         while (number_of_gums > 4):
             x = randint(0, self.width - 1)
             y = randint(0, self.height - 1)
-
-            while (self.grid[x][y].is_pattern):
-                if (x == self.width - 1):
-                    break
-                elif (y == self.height - 1):
-                    break
-                elif (x == 0 and y not in y_choise):
-                    break
-                elif (y == 0 and x not in x_choise):
-                    break
-                if (x in x_choise or y in y_choise):
-                    x = randint(0, self.width - 1)
-                    y = randint(0, self.height - 1)
-                else:
-                    if (not self.grid[x][y].is_pattern):
-                        break
-                    else:
-                        x = randint(0, self.width - 1)
-                        y = randint(0, self.height - 1)
-            if ((x, y) not in corners):
+            if (not self.grid[x][y].is_pattern and
+                (x, y) not in corners and
+                not self.grid[x][y].content_id):
+                x_choise.add(x)
+                y_choise.add(y)
                 self.grid[x][y].content_id = Cell.PACGUM
                 number_of_gums -= 1
+
 
     def center_cell(self) -> Cell:
         return self.grid[self.width // 2][self.height // 2]
@@ -124,7 +112,8 @@ class Maze:
     def put_pacgums_in_cells(
             self,
             cell_size: int,
-            origin: tuple[int, int]) -> None:
+            origin: tuple[int, int],
+            conf) -> None:
         ox, oy = origin
         for y in range(self.height):
             for x in range(self.width):
@@ -134,14 +123,14 @@ class Maze:
                     cell.content = Pac_Gum(
                         image="Pictures/gums/gum.png",
                         center_pos=(px + cell_size // 2, py + cell_size // 2),
-                        points=50,
+                        points=conf.points_per_pacgum,
                         size=5
                     )
                 elif cell.content_id == Cell.SUPER_PACGUM:
                     cell.content = Super_Pac_Gum(
                         image="Pictures/gums/gum.png",
                         center_pos=(px + cell_size // 2, py + cell_size // 2),
-                        points=50,
+                        points=conf.points_per_super_pacgum,
                         size=15
                     )
 

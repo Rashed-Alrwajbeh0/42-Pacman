@@ -116,7 +116,7 @@ def make_level(
         )
         cell_size = compute_layout(
             window_width, window_height, maze.width, maze.height)
-        maze.put_pacgums_in_cells(cell_size=cell_size, origin=MAZE_ORIGIN)
+        maze.put_pacgums_in_cells(cell_size=cell_size, origin=MAZE_ORIGIN, conf=configuration)
         current_level += 1
         return maze, cell_size
     except RuntimeError as exc:
@@ -280,12 +280,7 @@ def draw_hud(
     screen.blit(controls_text, (inner_x, controls_y + 26))
 
 
-def game_play(
-        screen: pygame.Surface,
-        cofiguration: confing,
-        direction_key: dict[str, int],
-        cheat: bool = False) -> tuple[str, int]:
-    """Run one full game session and return ("win"/"lose", final_score)."""
+def game_init(screen, cofiguration):
     origin = MAZE_ORIGIN
     window_width, window_height = screen.get_size()
     level_maze, size = make_level(
@@ -296,7 +291,6 @@ def game_play(
     fram_clock = pygame.time.Clock()
     width = cofiguration.levels["width"]
     hight = cofiguration.levels["height"]
-    score = 0
     edible_timer = 0.0
     lives = cofiguration.lives
     time_left = float(cofiguration.level_max_time)
@@ -304,6 +298,7 @@ def game_play(
     level_maze.get_pos(origin, size)
     center_cell = level_maze.center_cell()
     direction = "right"
+    score = 0
     if (center_cell.left is None or center_cell.right is None or
             center_cell.top is None or center_cell.bottom is None):
         raise RuntimeError("center cell position was not computed")
@@ -317,7 +312,7 @@ def game_play(
         (0, level_maze.height - 1),
         (level_maze.width - 1, level_maze.height - 1),
     ]
-    ghost_speed = ghost_speed_for_level(current_level)
+    ghost_speed = ghost_speed_for_level(current_level, 100, 5, 140)
     ghosts = [
         Ghost(corners[0], corners[0], (255, 0, 0), chase_then_flee, speed=ghost_speed),
         Ghost(corners[1], corners[1], (255, 165, 0), next_step_towards, speed=ghost_speed),
@@ -325,9 +320,53 @@ def game_play(
         Ghost(corners[3], corners[3], (0, 200, 255), random_walk, speed=ghost_speed),
     ]
     collision_radius = max(size / 2, 12.0)
-    Invincibility = 0
-    Ghost_freeze = 0
-    Increased_speed = 0
+    Invincibility = False
+    Ghost_freeze = False
+    Increased_speed = False
+    Stop_timer = False
+    return (fram_clock,
+            pacman,
+            level_maze,
+            size,
+            origin,
+            hight,
+            width,
+            ghosts,
+            collision_radius,
+            ghost_speed,
+            Invincibility,
+            Ghost_freeze,
+            Increased_speed,
+            score,
+            edible_timer,
+            time_left,
+            direction,
+            Stop_timer)
+
+def game_play(
+        screen: pygame.Surface,
+        cofiguration: confing,
+        direction_key: dict[str, int],
+        cheat: bool = False) -> tuple[str, int]:
+    """Run one full game session and return ("win"/"lose", final_score)."""
+    (fram_clock,
+     pacman,
+     level_maze,
+     size,
+     origin,
+     hight,
+     width,
+     ghosts,
+     collision_radius,
+     ghost_speed,
+     Invincibility,
+     Ghost_freeze,
+     Increased_speed,
+     score,
+     edible_timer,
+     time_left,
+     direction,
+     Stop_timer) = game_init(screen=screen, cofiguration=cofiguration)
     while True:
         dt = fram_clock.tick(60) / 1000
         for event in pygame.event.get():
@@ -337,12 +376,34 @@ def game_play(
                 if cheat:
                     if event.key == pygame.K_F1:
                         Invincibility = not Invincibility
-                    if event.key == pygame.K_F5:
-                        Ghost_freeze = not Ghost_freeze
+                    if event.key == pygame.K_F2:
+                        (fram_clock,
+                         pacman,
+                         level_maze,
+                         size,
+                         origin,
+                         hight,
+                         width,
+                         ghosts,
+                         collision_radius,
+                         ghost_speed,
+                         Invincibility,
+                         Ghost_freeze,
+                         Increased_speed,
+                         score,
+                         edible_timer,
+                         time_left,
+                         direction,
+                         Stop_timer) = game_init(screen=screen, cofiguration=cofiguration)
+                        continue
                     if event.key == pygame.K_F3:
                         pacman.lives += 1
                     if event.key == pygame.K_F4:
                         Increased_speed = not Increased_speed
+                    if event.key == pygame.K_F5:
+                        Ghost_freeze = not Ghost_freeze
+                    if event.key == pygame.K_F6:
+                        Stop_timer = not Stop_timer
 
         draw_background(screen=screen, image_path=BACKGROUND_IMAGE, alpha=100)
         level_maze.draw(screen, size, origin)
@@ -358,15 +419,15 @@ def game_play(
             direction = "left"
 
         if cheat and Increased_speed:
-            speed = 4
+            P_speed = 4
         else:
-            speed = 2
+            P_speed = 2
         pacman.move(
             grid_hight=hight,
             grid_width=width,
             grid_list=level_maze.grid,
             direction=direction,
-            destance=speed,
+            destance=P_speed,
             size=size,
         )
 
@@ -397,17 +458,17 @@ def game_play(
         player_cell = where_i_am(
             point=pacman.pos, cell_size=size, origin=origin, maze=level_maze)
         if cheat and Ghost_freeze:
-            speed = 0
+            G_speed = 0
         else:
-            speed = 100
+            G_speed = ghost_speed
         for ghost in ghosts:
-            ghost.update(level_maze, player_cell, dt, size, origin, speed)
+            ghost.update(level_maze, player_cell, dt, size, origin, G_speed)
 
         life_lost, points_gained = check_ghost_collisions(
             ghosts, pacman, cofiguration.points_per_ghost, collision_radius, Invincibility)
         score += points_gained
-
-        time_left -= dt
+        if not Stop_timer:
+            time_left -= dt
         if time_left <= 0 or life_lost:
             try:
                 if cheat and Invincibility:
@@ -417,7 +478,7 @@ def game_play(
                 pacman.reset_atfer_eaten(cheat=Cheat)
             except ValueError:
                 return "lose", score
-            time_left = float(cofiguration.level_max_time)
+            # time_left = float(cofiguration.level_max_time)
             if not cheat and not Invincibility:
                 for ghost in ghosts:
                     ghost.grid_pos = ghost.corner
