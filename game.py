@@ -407,6 +407,8 @@ def game_play(
 
         draw_background(screen=screen, image_path=BACKGROUND_IMAGE, alpha=100)
         level_maze.draw(screen, size, origin)
+        if current_level == 11:
+            return
 
         keyboard = pygame.key.get_pressed()
         if keyboard[direction_key["top"]]:
@@ -496,5 +498,4 @@ def game_play(
         draw_hud(
             screen, score, pacman.lives, current_level, time_left,
             level_max_time=float(cofiguration.level_max_time))
-
         pygame.display.update()
