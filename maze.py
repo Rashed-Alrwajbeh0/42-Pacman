@@ -41,26 +41,28 @@ class Maze:
             (self.width - 1, self.height - 1),
         ]
         for x, y in corners:
-            self.grid[x][y].content_id = Cell.SUPER_PACGUM
+            self.grid[y][x].content_id = Cell.SUPER_PACGUM
         x_choise = {0, self.width - 1}
         y_choise = {0, self.height - 1}
         # number_of_gums += 1
         if number_of_gums > 607:
             number_of_gums = 607
-        while (number_of_gums > 4):
+        placed = 0
+        attempts = 0
+        max_attempts = max(number_of_gums * 50, 200)
+        while placed < number_of_gums and attempts < max_attempts:
+            attempts += 1
             x = randint(0, self.width - 1)
             y = randint(0, self.height - 1)
-            if (not self.grid[x][y].is_pattern and
+            if (not self.grid[y][x].is_pattern and
                 (x, y) not in corners and
-                not self.grid[x][y].content_id):
-                x_choise.add(x)
-                y_choise.add(y)
-                self.grid[x][y].content_id = Cell.PACGUM
-                number_of_gums -= 1
+                not self.grid[y][x].content_id):
+                self.grid[y][x].content_id = Cell.PACGUM
+                placed += 1
 
 
     def center_cell(self) -> Cell:
-        return self.grid[self.width // 2][self.height // 2]
+        return self.grid[self.height // 2][self.width // 2]
 
     def remaining_pacgums(self) -> int:
         count = 0

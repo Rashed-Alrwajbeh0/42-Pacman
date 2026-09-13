@@ -4,32 +4,24 @@ from conf import read_json
 from menu import show_menu
 
 argv = sys.argv
-if len(argv) > 2:
-    print("Error: You must enter just one argument !!")
+if len(argv) != 2:
+    print("Error: You must enter exactly one argument !!")
     exit()
-check = ""
-n = -1
-for i in range(5):
-    check += argv[1][n]
-    n -= 1
-if check != "nosj.":
-    print("Error: The file must be .json")
+if not argv[1].endswith(".json"):
+    print("Error: The file must be a .json file !!")
     exit()
+
 configuration = read_json(argv[1])
 pygame.init()
 
 screen = pygame.display.set_mode((1600, 900))
 frame_clock = pygame.time.Clock()
-mode = "menu"
+
 try:
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-        # show_score(screen=screen, conf=configuration)
-        # log_in_secreen(screen=screen,
-        #                frame_clock=frame_clock,
-        #                conf=configuration)
         show_menu(
             screen=screen,
             cofiguration=configuration,
@@ -37,6 +29,6 @@ try:
         pygame.display.update()
         frame_clock.tick(60)
 except KeyboardInterrupt:
-    print("\nError: Stop the program from the termonal using ctrl + c !!")
-except Exception:
-    print("Error: Something error !!")
+    print("\nProgram stopped by user (Ctrl+C).")
+except Exception as exc:
+    print(f"Error: Something went wrong ({exc}) !!")

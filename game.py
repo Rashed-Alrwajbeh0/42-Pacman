@@ -17,7 +17,7 @@ EDIBLE_DURATION = 8.0
 HUD_PANEL_WIDTH = 450
 MAZE_ORIGIN = (HUD_PANEL_WIDTH, 50)
 
-BACKGROUND_IMAGE = "Pictures/Backgrounds/pacman_maze_background_v2 (1).png"
+BACKGROUND_IMAGE = "Pictures/Backgrounds/7.png"
 WALL_COLOR = (0, 209, 255)
 
 
@@ -197,87 +197,38 @@ def draw_hud(
         lives: int,
         level: int,
         time_left: float,
+        maze_origin: tuple[int, int],
+        maze_pixel_w: int,
         level_max_time: float = 90.0,
         panel_width: int = HUD_PANEL_WIDTH,
 ) -> None:
-    """Draw a large, card-styled HUD panel in the empty space to the
-    left of the maze (the maze is always drawn starting at x=HUD_PANEL_WIDTH).
+    ox, oy = maze_origin
+    box_w = 180
+    box_h = 70
+    gap = 35
+    gap_from_maze = 40
+    vertical_offset = 60
 
-    Shows the score, lives (as small Pac-Man icons), current level and
-    a time-remaining progress bar, plus a short controls reminder.
-    """
-    window_height = screen.get_height()
-    pad = MARGIN
-    panel_rect = pygame.Rect(
-        pad, pad, panel_width - 2 * pad, window_height - 2 * pad)
-    _rounded_panel(screen, panel_rect, _HUD_BG, border_color=_HUD_ACCENT)
+    label_font = pygame.font.SysFont(None, 24)
+    value_font = pygame.font.SysFont(None, 40, bold=True)
 
-    inner_x = panel_rect.left + 24
-    inner_width = panel_rect.width - 48
-    y = panel_rect.top + 24
-
-    title_font = pygame.font.SysFont(None, 56, bold=True)
-    label_font = pygame.font.SysFont(None, 26)
-    value_font = pygame.font.SysFont(None, 46, bold=True)
-    small_font = pygame.font.SysFont(None, 22)
-
-    title = title_font.render("PAC-MAN", True, _HUD_ACCENT)
-    screen.blit(title, (inner_x, y))
-    y += title.get_height() + 28
-
-    def draw_stat(label: str, value: str, box_height: int = 78) -> int:
-        nonlocal y
-        box_rect = pygame.Rect(inner_x, y, inner_width, box_height)
-        _rounded_panel(screen, box_rect, _HUD_BG_LIGHT, radius=14)
+    def draw_box(x: int, y: int, label: str, value: str) -> None:
+        rect = pygame.Rect(x, y, box_w, box_h)
+        _rounded_panel(screen, rect, _HUD_BG_LIGHT, border_color=_HUD_ACCENT, radius=12)
         label_surf = label_font.render(label.upper(), True, _HUD_DIM)
-        screen.blit(label_surf, (box_rect.left + 16, box_rect.top + 10))
+        screen.blit(label_surf, (rect.left + 12, rect.top + 8))
         value_surf = value_font.render(value, True, _HUD_TEXT)
-        screen.blit(value_surf, (box_rect.left + 16, box_rect.top + 34))
-        y += box_height + 16
-        return box_rect.bottom
+        screen.blit(value_surf, (rect.left + 12, rect.top + 30))
 
-    draw_stat("Score", f"{score:,}")
-    lives_bottom = draw_stat("Lives", "")
-    lives_row_y = lives_bottom - 78 + 44
-    for i in range(max(lives, 0)):
-        cx = inner_x + 30 + i * 34
-        pygame.draw.circle(screen, _HUD_ACCENT, (cx, lives_row_y), 12)
-        pygame.draw.polygon(
-            screen, _HUD_BG_LIGHT,
-            [(cx, lives_row_y),
-             (cx + 14, lives_row_y - 7),
-             (cx + 14, lives_row_y + 7)])
+    start_y = oy + vertical_offset   
 
-    draw_stat("Level", str(level))
+    left_x = ox - gap_from_maze - box_w
+    draw_box(left_x, start_y, "Score", f"{score:,}")
+    draw_box(left_x, start_y + box_h + gap, "Lives", str(lives))
 
-    time_box = pygame.Rect(inner_x, y, inner_width, 78)
-    _rounded_panel(screen, time_box, _HUD_BG_LIGHT, radius=14)
-    label_surf = label_font.render("TIME LEFT", True, _HUD_DIM)
-    screen.blit(label_surf, (time_box.left + 16, time_box.top + 10))
-    ratio = 0.0
-    if level_max_time > 0:
-        ratio = max(0.0, min(1.0, time_left / level_max_time))
-    bar_bg = pygame.Rect(
-        time_box.left + 16, time_box.top + 46, inner_width - 32, 16)
-    pygame.draw.rect(screen, (50, 50, 70), bar_bg, border_radius=8)
-    if ratio > 0:
-        bar_fill = pygame.Rect(
-            bar_bg.left, bar_bg.top, int(bar_bg.width * ratio), bar_bg.height)
-        bar_color = (
-            int(220 - 120 * ratio), int(70 + 150 * ratio), 70)
-        pygame.draw.rect(screen, bar_color, bar_fill, border_radius=8)
-    time_text = small_font.render(
-        f"{max(int(time_left), 0)}s", True, _HUD_TEXT)
-    screen.blit(time_text, (bar_bg.right - time_text.get_width(),
-                            time_box.top + 10))
-    y = time_box.bottom + 16
-
-    controls_y = panel_rect.bottom - 90
-    controls_label = label_font.render("CONTROLS", True, _HUD_DIM)
-    screen.blit(controls_label, (inner_x, controls_y))
-    controls_text = small_font.render(
-        "Arrows / WASD to move", True, _HUD_TEXT)
-    screen.blit(controls_text, (inner_x, controls_y + 26))
+    right_x = ox + maze_pixel_w + gap_from_maze
+    draw_box(right_x, start_y, "Level", str(level))
+    draw_box(right_x, start_y + box_h + gap, "Time", str(max(int(time_left), 0)))
 
 
 def game_init(screen, cofiguration):
@@ -480,7 +431,7 @@ def game_play(
                 pacman.reset_atfer_eaten(cheat=Cheat)
             except ValueError:
                 return "lose", score
-            # time_left = float(cofiguration.level_max_time)
+            time_left = float(cofiguration.level_max_time)
             if not cheat and not Invincibility:
                 for ghost in ghosts:
                     ghost.grid_pos = ghost.corner
@@ -497,5 +448,7 @@ def game_play(
 
         draw_hud(
             screen, score, pacman.lives, current_level, time_left,
+            maze_origin=origin,
+            maze_pixel_w=level_maze.width * size,
             level_max_time=float(cofiguration.level_max_time))
         pygame.display.update()

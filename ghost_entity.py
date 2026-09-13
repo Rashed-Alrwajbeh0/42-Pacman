@@ -81,6 +81,7 @@ class Ghost:
         self.state = Ghoststate.Chasing
         self.respawn_timer = 0.0
         self.facing: tuple[int, int] = (0, -1)
+        self._last_grid_pos: Optional[Position] = None 
 
     def become_eddible(self) -> None:
         """Switch the ghost to edible state (player ate a super-pacgum)."""
@@ -113,10 +114,15 @@ class Ghost:
         if self.state == Ghoststate.Edible:
             self.target_pos = ghost_logic.flee_towards_farthest_neighbor(
                 maze, self.grid_pos, player_pos)
+        elif self.behavior is ghost_logic.random_walk:
+             self.target_pos = ghost_logic.random_walk(
+                 maze, self.grid_pos, player_pos, self._last_grid_pos)
+            
         else:
             self.target_pos = self.behavior(
                 maze, self.grid_pos, player_pos)
 
+        self._last_grid_pos = previous 
         dx = self.target_pos[0] - previous[0]
         dy = self.target_pos[1] - previous[1]
         if dx or dy:

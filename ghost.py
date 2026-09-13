@@ -13,7 +13,7 @@ from maze import Maze
 
 position = tuple[int, int]
 FLEE_DISTANCE_THRESHOLD = 4
-PLAYER_BASE_SPEED = 120.0 
+PLAYER_BASE_SPEED = 90.0 
 
 
 def manhattan_distance(a: position, b: position) -> int:
@@ -70,7 +70,8 @@ def flee_towards_farthest_neighbor(
 
 
 def random_walk(
-        maza: Maze, ghost_pos: position, player_pos: position
+        maza: Maze, ghost_pos: position, player_pos: position,
+        previous_pos: Optional[position] = None,
         ) -> position:
     """Move the ghost to a random walkable neighbor cell.
 
@@ -78,13 +79,17 @@ def random_walk(
         maza: The current Maze, used to find walkable neighbors.
         ghost_pos: The ghost's current (x, y) grid position.
         player_pos: Unused (kept for a consistent behavior signature).
+        previous_pos: The cell the ghost was in just before this one,
+            used to avoid backtracking immediately.
 
     Returns:
-        A randomly chosen neighbor cell, or ghost_pos if it has none.
-    """
+        A randomly chosen neighbor cell (never the previous one unless
+        it's the only walkable neighbor), or ghost_pos if it has none.    """
     neighbors = maza.neighbors(*ghost_pos)
     if not neighbors:
         return ghost_pos
+    if previous_pos is not None and len(neighbors) > 1:
+        neighbors = [n for n in neighbors if n != previous_pos]
     return random.choice(neighbors)
 
 
