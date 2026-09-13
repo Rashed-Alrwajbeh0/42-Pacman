@@ -301,16 +301,10 @@ def show_controls(
             if event.type == pygame.QUIT:
                 exit()
             if event.type == pygame.KEYDOWN:
-
-                if event.key == pygame.K_BACKSPACE:
-                    leter_id = -1
-                elif event.key == pygame.K_RETURN:
-                    leter_id = 1
-                else:
-                    if event.key not in [pygame.K_TAB, pygame.K_SPACE]:
-                        leter_id = 0
-                        leter = event.unicode
-                        leter_key = event.key
+                if event.key not in [pygame.K_TAB, pygame.K_SPACE, pygame.K_ESCAPE]:
+                    leter_id = 0
+                    leter = event.unicode
+                    leter_key = event.key
         draw_background(screen=screen,
                         image_path="Pictures/Backgrounds/1.jpeg")
         draw_table(screen=screen)
@@ -350,7 +344,6 @@ def show_controls(
                 right_field.is_active = True
         if leter:
             valus = list(movimg_dict.values())
-            print(f"================>{valus}<================")
             if leter_key not in valus:
                 if up_field.is_active:
                     up_field.update_text(leter_id=leter_id, leter=leter)

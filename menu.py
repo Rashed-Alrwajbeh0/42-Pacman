@@ -132,13 +132,13 @@ def menu_init(screen: pygame.Surface) -> list[Button]:
         border_color="purple",
         border_radius=100,
         font_size=font_size)
-    setting_button = Button(
+    instructions_button = Button(
         pos=(button_x, int(570 * sy)),
-        text="Setting",
+        text="Instructions",
         width=button_width,
         height=button_height,
         border=5,
-        image="Pictures/bottoms/setting.png",
+        image="Pictures/bottoms/instructions.png",
         font_color="white",
         border_color="blue",
         border_radius=100,
@@ -157,7 +157,7 @@ def menu_init(screen: pygame.Surface) -> list[Button]:
     return [start_button,
             high_score_button,
             controls_button,
-            setting_button,
+            instructions_button,
             exit_button]
 
 
@@ -169,7 +169,7 @@ def show_menu(
     start_button = bottoms[0]
     high_score_button = bottoms[1]
     controls_button = bottoms[2]
-    setting_button = bottoms[3]
+    instructions_button = bottoms[3]
     exit_button = bottoms[4]
     screen_width, screen_height = screen.get_size()
     controls_key = {
@@ -196,7 +196,7 @@ def show_menu(
         start_button.draw(screen, (620, 367))
         high_score_button.draw(screen, (620, 450))
         controls_button.draw(screen, (620, 527))
-        setting_button.draw(screen,(620, 607))
+        instructions_button.draw(screen, (620, 607))
         exit_button.draw(screen, (620, 687))
 
         if pygame.mouse.get_just_pressed()[0]:
@@ -213,13 +213,13 @@ def show_menu(
                 controls_key, controls_leters = show_controls(
                     screen=screen,
                     frame_clock=fram_clock,
-                    font_path="fonts/1.ttf",
+                    font_path="fonts//Roboto/static/Roboto_Condensed-Regular.ttf",
                     field_containers=controls_leters,
                     movimg_dict=controls_key)
                 print(controls_leters)
-                print("-------------")
-            elif setting_button.collision(mouse_point):
-                return "sitting"
+            elif instructions_button.collision(mouse_point):
+                from instructions import show_instructions
+                show_instructions(screen=screen)
             elif exit_button.collision(mouse_point):
                 exit()
         elif pygame.mouse.get_pressed()[2]:
