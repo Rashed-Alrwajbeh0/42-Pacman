@@ -38,3 +38,5 @@ try:
         frame_clock.tick(60)
 except KeyboardInterrupt:
     print("\nError: Stop the program from the termonal using ctrl + c !!")
+except Exception:
+    print("Error: Something error !!")
