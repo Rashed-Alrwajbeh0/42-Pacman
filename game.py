@@ -300,6 +300,9 @@ def game_play(
         direction_key: dict[str, int],
         cheat: bool = False) -> tuple[str, int]:
     """Run one full game session and return ("win"/"lose", final_score)."""
+    global current_level
+    if current_level:
+        current_level = 0
     (fram_clock,
      pacman,
      level_maze,
@@ -447,8 +450,9 @@ def game_play(
             ghost.draw(screen, size, origin)
 
         draw_hud(
-            screen, score, pacman.lives, current_level, time_left,
+            screen, score, pacman.lives, current_level,
             maze_origin=origin,
+            time_left=time_left,
             maze_pixel_w=level_maze.width * size,
             level_max_time=float(cofiguration.level_max_time))
         pygame.display.update()
