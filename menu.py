@@ -132,13 +132,13 @@ def menu_init(screen: pygame.Surface) -> list[Button]:
         border_color="purple",
         border_radius=100,
         font_size=font_size)
-    instructions_button = Button(
+    setting_button = Button(
         pos=(button_x, int(570 * sy)),
-        text="Instructions",
+        text="Setting",
         width=button_width,
         height=button_height,
         border=5,
-        image="Pictures/bottoms/instructions.png",
+        image="Pictures/bottoms/setting.png",
         font_color="white",
         border_color="blue",
         border_radius=100,
@@ -157,7 +157,7 @@ def menu_init(screen: pygame.Surface) -> list[Button]:
     return [start_button,
             high_score_button,
             controls_button,
-            instructions_button,
+            setting_button,
             exit_button]
 
 
@@ -169,7 +169,7 @@ def show_menu(
     start_button = bottoms[0]
     high_score_button = bottoms[1]
     controls_button = bottoms[2]
-    instructions_button = bottoms[3]
+    setting_button = bottoms[3]
     exit_button = bottoms[4]
     screen_width, screen_height = screen.get_size()
     controls_key = {
@@ -196,7 +196,7 @@ def show_menu(
         start_button.draw(screen, (620, 367))
         high_score_button.draw(screen, (620, 450))
         controls_button.draw(screen, (620, 527))
-        instructions_button.draw(screen,(620, 607))
+        setting_button.draw(screen,(620, 607))
         exit_button.draw(screen, (620, 687))
 
         if pygame.mouse.get_just_pressed()[0]:
@@ -208,7 +208,8 @@ def show_menu(
                 result, score = game_play(
                     screen=screen, cofiguration=cofiguration,
                     direction_key=controls_key)
-                new_high = is_top_10(score)
+            if result != "menu":
+                new_high = is_top_10(score)  
                 if result == "lose":
                     action, name = show_game_over(screen, score, new_high)
                 else:
@@ -225,32 +226,19 @@ def show_menu(
                 controls_key, controls_leters = show_controls(
                     screen=screen,
                     frame_clock=fram_clock,
-                    font_path="fonts//Roboto/static/Roboto_Condensed-Regular.ttf",
+                    font_path="fonts/1.ttf",
                     field_containers=controls_leters,
                     movimg_dict=controls_key)
-
-            elif instructions_button.collision(mouse_point):
-                from instructions import show_instructions
-                show_instructions(screen=screen)
+                print(controls_leters)
+                print("-------------")
+            elif setting_button.collision(mouse_point):
+                return "sitting"
             elif exit_button.collision(mouse_point):
                 exit()
         elif pygame.mouse.get_pressed()[2]:
             mouse_point = pygame.mouse.get_pos()
             if in_pac_man(mouse_point, screen_width, screen_height):
                 from game import game_play
-                from end_screens import show_game_over, show_victory
-                from highscore import is_top_10, add_highscore
-                result, score = game_play(
-                    screen=screen, cofiguration=cofiguration,
-                    direction_key=controls_key,
-                    cheat=True)
-                new_high = is_top_10(score)  
-                if result == "lose":
-                    action, name = show_game_over(screen, score, new_high)
-                else:
-                    action, name = show_victory(
-                        screen, score, new_high, has_next_level=False)
-                if new_high and name:
-                    add_highscore(name, score)
+                game_play(screen=screen, cofiguration=cofiguration, direction_key=controls_key, cheat=True)
         pygame.display.update()
         fram_clock.tick(60)

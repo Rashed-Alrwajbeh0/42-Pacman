@@ -137,9 +137,10 @@ class Maze:
                     )
 
     def draw(self, screen: pygame.Surface, cell_size: int,
-             origin: tuple[int, int] = (0, 0)) -> list[list[Cell]]:
+             origin: tuple[int, int] = (0, 0),
+             wall_color: tuple[int, int, int] = (255, 255, 51),
+             pattern_color: tuple[int, int, int] = (0, 209, 255)) -> list[list[Cell]]:
         ox, oy = origin
-        wall_color = (255, 255, 51)
 
         for y in range(self.height):
             for x in range(self.width):
@@ -149,6 +150,11 @@ class Maze:
                 cell.top = py
                 cell.right = px + cell_size
                 cell.bottom = py + cell_size
+
+                if cell.is_pattern:
+                    pygame.draw.rect(
+                        screen, pattern_color,
+                        pygame.Rect(px, py, cell_size, cell_size))
 
                 if cell.north:
                     pygame.draw.line(
@@ -171,7 +177,6 @@ class Maze:
 
                 if cell.content_id == Cell.PACGUM and cell.content is not None:
                     cell.content.draw(screen)
-                elif (cell.content_id == Cell.SUPER_PACGUM
-                        and cell.content is not None):
+                elif (cell.content_id == Cell.SUPER_PACGUM and cell.content is not None):
                     cell.content.draw(screen)
         return self.grid

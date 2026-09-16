@@ -14,7 +14,7 @@ current_level = 0
 HUD_HEIGHT = 60
 MARGIN = 20
 EDIBLE_DURATION = 8.0
-HUD_PANEL_WIDTH = 450
+HUD_PANEL_WIDTH = 350
 MAZE_ORIGIN = (HUD_PANEL_WIDTH, 50)
 
 BACKGROUND_IMAGE = "Pictures/Backgrounds/7.png"
@@ -177,7 +177,46 @@ _HUD_BG = (18, 18, 40)
 _HUD_BG_LIGHT = (32, 32, 64)
 _HUD_TEXT = (235, 235, 245)
 _HUD_DIM = (150, 150, 170)
+_PAUSE_GOLD = (255, 213, 0)
 
+
+def show_pause_menu(screen: pygame.Surface, frame_clock: pygame.time.Clock) -> str:
+    """Show the pause overlay. Returns 'resume' or 'menu'"""
+    width, height = screen.get_size()
+    font_title = pygame.font.SysFont(None, 60, bold=True)
+    font_btn = pygame.font.SysFont(None, 32)
+
+    resume_rect = pygame.Rect(width // 2 - 130, height // 2 - 50, 260, 60)
+    menu_rect = pygame.Rect(width // 2 - 130, height // 2 + 30, 260, 60)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                return "resume"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if resume_rect.collidepoint(pos):
+                    return "resume"
+                if menu_rect.collidepoint(pos):
+                    return "menu"
+
+        overlay = pygame.Surface((width, height))
+        overlay.set_alpha(180)
+        overlay.fill((0, 0, 0))
+        screen.blit(overlay, (0, 0))
+
+        title = font_title.render("PAUSED", True, _PAUSE_GOLD)
+        screen.blit(title, title.get_rect(center=(width // 2, height // 2 - 120)))
+        pygame.draw.rect(screen, _PAUSE_GOLD, resume_rect, border_radius=14)
+        text = font_btn.render("Resume", True, "black")
+        screen.blit(text, text.get_rect(center=resume_rect.center))
+        pygame.draw.rect(screen, _PAUSE_GOLD, menu_rect, border_radius=14)
+        text = font_btn.render("Main Menu", True, "black")
+        screen.blit(text, text.get_rect(center=menu_rect.center))
+        pygame.display.update()
+        frame_clock.tick(60)
 
 def _rounded_panel(
         screen: pygame.Surface,
@@ -231,7 +270,7 @@ def draw_hud(
     draw_box(right_x, start_y + box_h + gap, "Time", str(max(int(time_left), 0)))
 
 
-def game_init(screen, cofiguration):
+def game_init(screen: pygame.Surface, cofiguration: confing) -> tuple:
     origin = MAZE_ORIGIN
     window_width, window_height = screen.get_size()
     level_maze, size = make_level(
@@ -327,7 +366,11 @@ def game_play(
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if cheat:
+                 if event.key == pygame.K_SPACE:
+                     action = show_pause_menu(screen, fram_clock)
+                     if action == "menu":
+                         return "menu", score
+                 if cheat:
                     if event.key == pygame.K_F1:
                         Invincibility = not Invincibility
                     if event.key == pygame.K_F2:
@@ -360,9 +403,7 @@ def game_play(
                         Stop_timer = not Stop_timer
 
         draw_background(screen=screen, image_path=BACKGROUND_IMAGE, alpha=100)
-        level_maze.draw(screen, size, origin)
-        if current_level == 11:
-            return
+        level_maze.draw(screen, size, origin, wall_color=WALL_COLOR, pattern_color=WALL_COLOR)
 
         keyboard = pygame.key.get_pressed()
         if keyboard[direction_key["top"]]:
@@ -444,7 +485,29 @@ def game_play(
 
 
         if level_maze.remaining_pacgums() == 0:
-            return "win", score
+            if current_level >= 10:
+                return "win", score
+            remaining_lives = pacman.lives
+            (fram_clock,
+             pacman,
+             level_maze,
+             size,
+             origin,
+             hight,
+             width,
+             ghosts,
+             collision_radius,
+             ghost_speed,
+             Invincibility,
+             Ghost_freeze,
+             Increased_speed,
+             _unused_score,
+             edible_timer,
+             time_left,
+             direction,
+             Stop_timer) = game_init(screen=screen, cofiguration=cofiguration)
+            pacman.lives = remaining_lives
+            continue
 
         for ghost in ghosts:
             ghost.draw(screen, size, origin)
