@@ -31,7 +31,7 @@ def show_score(screen: pygame.Surface, conf: confing) -> None:
             if event.type == pygame.MOUSEBUTTONDOWN and back_rect.collidepoint(event.pos):
                 return
 
-        draw_background(screen=screen, image_path="Pictures/Backgrounds/5.jpg", alpha=100)
+        draw_background(screen=screen, image_path="Pictures/8.jpg", alpha=200)
 
         title = title_font.render("HIGH SCORES", True, _GOLD)
         screen.blit(title, title.get_rect(centerx=width // 2, y=50))
