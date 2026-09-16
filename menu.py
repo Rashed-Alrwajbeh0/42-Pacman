@@ -244,7 +244,7 @@ def show_menu(
                     screen=screen, cofiguration=cofiguration,
                     direction_key=controls_key,
                     cheat=True)
-                new_high = is_top_10(score)  
+                new_high = is_top_10(score)
                 if result == "lose":
                     action, name = show_game_over(screen, score, new_high)
                 else:

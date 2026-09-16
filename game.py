@@ -476,7 +476,7 @@ def game_play(
             except ValueError:
                 return "lose", score
             time_left = float(cofiguration.level_max_time)
-            if not cheat and not Invincibility:
+            if not Invincibility:
                 for ghost in ghosts:
                     ghost.grid_pos = ghost.corner
                     ghost.target_pos = ghost.corner
