@@ -17,28 +17,18 @@ pygame.init()
 screen = pygame.display.set_mode((1600, 900))
 frame_clock = pygame.time.Clock()
 
-# try:
-#     while True:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 sys.exit()
-#         show_menu(
-#             screen=screen,
-#             cofiguration=configuration,
-#             fram_clock=frame_clock)
-#         pygame.display.update()
-#         frame_clock.tick(60)
-# except KeyboardInterrupt:
-#     print("\nProgram stopped by user (Ctrl+C).")
-# except Exception as exc:
-#     print(f"Error: Something went wrong ({exc}) !!")
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-    show_menu(
-        screen=screen,
-        cofiguration=configuration,
-        fram_clock=frame_clock)
-    pygame.display.update()
-    frame_clock.tick(60)
+try:
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+        show_menu(
+            screen=screen,
+            cofiguration=configuration,
+            fram_clock=frame_clock)
+        pygame.display.update()
+        frame_clock.tick(60)
+except KeyboardInterrupt:
+    print("\nProgram stopped by user (Ctrl+C).")
+except Exception as exc:
+    print(f"Error: Something went wrong ({exc}) !!")
