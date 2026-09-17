@@ -33,7 +33,7 @@ class Button:
         self.image_border_color = "white"
         if image is not None:
             self.image = pygame.image.load(image)
-            self.resized_image = pygame.transform.scale(
+            self.resized_image = pygame.transform.smoothscale(
                 self.image, (50, 50))
         self.button_rec = pygame.Rect(
                 self.pos[0], self.pos[1], self.width, self.height)
@@ -45,7 +45,7 @@ class Button:
             image_color="white",
             radius=15) -> None:
         font = pygame.font.Font(self.font, size=self.font_size)
-        button_text = font.render(self.text, False, self.font_color)
+        button_text = font.render(self.text, True, self.font_color)
         button_text_rec = button_text.get_rect(
             center=(self.button_rec.center))
         pygame.draw.rect(
@@ -185,7 +185,7 @@ def show_menu(
         "down": "Down"
     }
     menu_image = pygame.image.load("Pictures/menu/menu.png").convert()
-    resized_menu = pygame.transform.scale(
+    resized_menu = pygame.transform.smoothscale(
         menu_image, (screen_width, screen_height))
 
     while True:

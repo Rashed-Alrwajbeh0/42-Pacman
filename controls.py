@@ -6,97 +6,44 @@ from typing import Optional
 from menu import Button
 
 
-def draw_table(screen: pygame.Surface) -> None:
-    # draw the outside table
+def draw_table(screen: pygame.Surface):
     pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500, 100),
-        end_pos=(1100, 100),
-        width=2
-    )
+            surface=screen,
+            color="yellow",
+            start_pos=(440, 250),
+            end_pos=(1160, 250),
+            width=3)
 
     pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500, 100),
-        end_pos=(500, 800),
-        width=2
-    )
+            surface=screen,
+            color="yellow",
+            start_pos=(440, 380),
+            end_pos=(1160, 380),
+            width=3)
 
     pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(1100, 100),
-        end_pos=(1100, 800),
-        width=2
-    )
+            surface=screen,
+            color="yellow",
+            start_pos=(440, 510),
+            end_pos=(1160, 510),
+            width=3)
 
     pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500, 800),
-        end_pos=(1100, 800),
-        width=2
-    )
-    # draw the insisde table
-    pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500,200),
-        end_pos=(1100, 200),
-        width=2
-    )
-
-    pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500,325),
-        end_pos=(1100, 325),
-        width=2
-    )
-
-    pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500,450),
-        end_pos=(1100, 450),
-        width=2
-    )
-
-    pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500,575),
-        end_pos=(1100, 575),
-        width=2
-    )
-
-    pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(500,700),
-        end_pos=(1100, 700),
-        width=2
-    )
-
-    pygame.draw.line(
-        surface=screen,
-        color="red",
-        start_pos=(800,200),
-        end_pos=(800, 700),
-        width=2
-    )
+            surface=screen,
+            color="yellow",
+            start_pos=(440, 635),
+            end_pos=(1160, 635),
+            width=3)
 
 def draw_fonts(screen: pygame.Surface, font: pygame.Font):
-    text = font.render("Pacman move up", False, "white")
-    screen.blit(text, (510, 250))
-    text = font.render("Pacman move right", False, "white")
-    screen.blit(text, (510, 370))
-    text = font.render("Pacman move down", False, "white")
-    screen.blit(text, (510, 490))
-    text = font.render("Pacman move left", False, "white")
-    screen.blit(text, (510, 610))
+    text = font.render("Pacman move up", True, "white")
+    screen.blit(text, (460, 290))
+    text = font.render("Pacman move right", True, "white")
+    screen.blit(text, (460, 420))
+    text = font.render("Pacman move down", True, "white")
+    screen.blit(text, (460, 550))
+    text = font.render("Pacman move left", True, "white")
+    screen.blit(text, (460, 670))
 
 
 class Field:
@@ -170,7 +117,7 @@ class Field:
             x_space: int = 10,
             y_space: int = 5) -> None:
         self.font = self.field_font_type.render(
-                self.text, False, self.font_color)
+                self.text, True, self.font_color)
         pygame.draw.rect(
             surface=screen,
             color=self.border_color,
@@ -190,58 +137,59 @@ def show_controls(
         field_containers: dict[str, str],
         movimg_dict: dict[str, pygame.Event]):
     Save_button = Button(
-        pos=(500, 700),
+        pos=(700, 800),
         text="Save",
-        width=602,
-        height=102,
-        font_color="white",
-        border=2,
-        border_color="red",
-        border_radius=0,
+        width=180,
+        height=50,
+        font_color="black",
+        border=0,
+        border_color=(255, 213, 0),
+        border_radius=5,
+        font_size=30
     )
-    font = pygame.font.Font(font_path, 30)
-    font2 = pygame.font.Font(font_path, 25)
+    font = pygame.font.Font(font_path, 50)
+    font2 = pygame.font.Font(font_path, 40)
     up_field = Field(
-        pos=(800, 200),
-        width=302,
-        height=127,
-        border=2,
-        border_color="red",
-        border_radius=0,
-        font_color="white",
+        pos=(800, 275),
+        width=150,
+        height=80,
+        border=0,
+        border_color=(255, 213, 0),
+        border_radius=20,
+        font_color="black",
         font_size=50,
         font_type=font_path
     )
     right_field = Field(
-        pos=(800, 325),
-        width=302,
-        height=127,
-        border=2,
-        border_color="red",
-        border_radius=0,
-        font_color="white",
+        pos=(800, 405),
+        width=150,
+        height=80,
+        border=0,
+        border_color=(255, 213, 0),
+        border_radius=20,
+        font_color="black",
         font_size=50,
         font_type=font_path
     )
     down_field = Field(
-        pos=(800, 450),
-        width=302,
-        height=127,
-        border=2,
-        border_color="red",
-        border_radius=0,
-        font_color="white",
+        pos=(800, 535),
+        width=150,
+        height=80,
+        border=0,
+        border_color=(255, 213, 0),
+        border_radius=20,
+        font_color="black",
         font_size=50,
         font_type=font_path
     )
     left_field = Field(
-        pos=(800, 575),
-        width=302,
-        height=127,
-        border=2,
-        border_color="red",
-        border_radius=0,
-        font_color="white",
+        pos=(800, 660),
+        width=150,
+        height=80,
+        border=0,
+        border_color=(255, 213, 0),
+        border_radius=20,
+        font_color="black",
         font_size=50,
         font_type=font_path
     )
@@ -253,48 +201,48 @@ def show_controls(
     up_field.text = field_containers["top"]
     leter_key = None
     rest_button1 = Button(
-        pos=(1000, 202),
+        pos=(1000, 265),
         text="RESET",
-        height=123,
+        height=100,
         width=100,
-        border=2,
-        border_radius=0,
-        border_color="red",
-        font_color="white",
-        font_size=50
+        border=0,
+        border_radius=100,
+        border_color=(255, 213, 0),
+        font_color="black",
+        font_size=45
     )
     rest_button2 = Button(
-        pos=(1000, 327),
+        pos=(1000, 395),
         text="RESET",
-        height=123,
+        height=100,
         width=100,
-        border=2,
-        border_radius=0,
-        border_color="red",
-        font_color="white",
-        font_size=50
+        border=0,
+        border_radius=100,
+        border_color=(255, 213, 0),
+        font_color="black",
+        font_size=45
     )
     rest_button3 = Button(
-        pos=(1000, 452),
+        pos=(1000, 520),
         text="RESET",
-        height=123,
+        height=100,
         width=100,
-        border=2,
-        border_radius=0,
-        border_color="red",
-        font_color="white",
-        font_size=50
+        border=0,
+        border_radius=100,
+        border_color=(255, 213, 0),
+        font_color="black",
+        font_size=45
     )
     rest_button4 = Button(
-        pos=(1000, 577),
+        pos=(1000, 650),
         text="RESET",
-        height=123,
+        height=100,
         width=100,
-        border=2,
-        border_radius=0,
-        border_color="red",
-        font_color="white",
-        font_size=50
+        border=0,
+        border_radius=100,
+        border_color=(255, 213, 0),
+        font_color="black",
+        font_size=45
     )
     while True:
         for event in pygame.event.get():
@@ -305,17 +253,16 @@ def show_controls(
                     leter_id = 0
                     leter = event.unicode
                     leter_key = event.key
-        draw_background(screen=screen,
-                        image_path="Pictures/Backgrounds/1.jpeg")
+        draw_background(screen=screen, image_path="Pictures/Backgrounds/controls.png", alpha=200)
         draw_table(screen=screen)
-        text = font.render("Pacman moving controls", False, "white")
-        screen.blit(text, (600, 125))
+        text = font.render("Pacman moving controls", True, "yellow")
+        screen.blit(text, (550, 170))
         draw_fonts(screen=screen, font=font2)
         Save_button.draw(screen=screen)
-        up_field.draw(screen=screen, y_space=30)
-        down_field.draw(screen=screen, y_space=30)
-        left_field.draw(screen=screen, y_space=30)
-        right_field.draw(screen=screen, y_space=30)
+        up_field.draw(screen=screen, y_space=10)
+        down_field.draw(screen=screen, y_space=10)
+        left_field.draw(screen=screen, y_space=10)
+        right_field.draw(screen=screen, y_space=10)
         rest_button1.draw(screen=screen)
         rest_button2.draw(screen=screen)
         rest_button3.draw(screen=screen)
@@ -363,7 +310,6 @@ def show_controls(
                     field_containers["right"] = leter
             leter = None
             leter_key = None
-        # up right down left 
         if pygame.mouse.get_just_pressed()[0]:
             pos = pygame.mouse.get_pos()
             if rest_button1.collision(pos):
