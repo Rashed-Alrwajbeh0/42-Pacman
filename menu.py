@@ -42,8 +42,8 @@ class Button:
             self,
             screen: pygame.Surface,
             image_pos: Optional[tuple[int, int]] = None,
-            image_color="white",
-            radius=15) -> None:
+            image_color: str | tuple[int, int, int] = "white",
+            radius: int = 15) -> None:
         font = pygame.font.Font(self.font, size=self.font_size)
         button_text = font.render(self.text, True, self.font_color)
         button_text_rec = button_text.get_rect(
@@ -221,14 +221,12 @@ def show_menu(
                 show_score(screen=screen, conf=cofiguration)
             elif controls_button.collision(mouse_point):
                 from controls import show_controls
-                print(controls_leters)
                 controls_key, controls_leters = show_controls(
                     screen=screen,
                     frame_clock=fram_clock,
-                    font_path="fonts//Roboto/static/Roboto.ttf",
+                    font_path="fonts/Roboto/Roboto.ttf",
                     field_containers=controls_leters,
                     movimg_dict=controls_key)
-
             elif instructions_button.collision(mouse_point):
                 from instructions import show_instructions
                 show_instructions(screen=screen)

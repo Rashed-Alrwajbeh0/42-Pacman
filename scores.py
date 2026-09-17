@@ -12,12 +12,12 @@ _BG_PANEL = (18, 18, 40)
 
 
 def collidepoint(
-        point: tuple[int],
+        point: tuple[int, int],
         button_y_top: int,
         button_y_bottom: int,
         button_x_left: int,
         button_x_right: int
-        ):
+        ) -> bool:
     px, py = point
     return (px <= button_x_right and
             px >= button_x_left and

@@ -2,11 +2,18 @@
 
 import json
 from pathlib import Path
+from typing import TypedDict
+
+
+class height_score(TypedDict):
+    name: str
+    score: int
+
 
 _FILE = Path("highscores.json")
 
 
-def _load() -> list[dict]:
+def _load() -> list[height_score]:
     try:
         with open(_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -30,6 +37,6 @@ def add_highscore(name: str, score: int) -> None:
         json.dump(entries[:10], f, indent=2)
 
 
-def get_top_10() -> list[dict]:
+def get_top_10() -> list[height_score]:
     """Return the current top 10 entries."""
     return _load()

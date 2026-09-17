@@ -1,8 +1,9 @@
-from typing import Optional
-import pygame
-from mazegenerator import MazeGenerator
 from cell import Cell, Gum, Pac_Gum, Super_Pac_Gum
+from mazegenerator import MazeGenerator
 from random import randint, seed
+from typing import Optional
+from conf import confing
+import pygame
 
 
 class Maze:
@@ -111,7 +112,7 @@ class Maze:
             self,
             cell_size: int,
             origin: tuple[int, int],
-            conf) -> None:
+            conf: confing) -> None:
         ox, oy = origin
         for y in range(self.height):
             for x in range(self.width):

@@ -1,7 +1,9 @@
-import sys
-import pygame
+from ghost_entity import Ghost, Ghoststate
 from cell import PacMan, Super_Pac_Gum
 from conf import confing
+from maze import Maze
+import pygame
+import sys
 from ghost import (
     chase_then_flee,
     next_step_towards,
@@ -9,8 +11,7 @@ from ghost import (
     random_walk,
     seek_pacgum_near_player,
 )
-from ghost_entity import Ghost, Ghoststate
-from maze import Maze
+from typing import Any
 
 
 current_level = 0
@@ -275,7 +276,7 @@ def draw_hud(
         right_x, start_y + box_h + gap, "Time", str(max(int(time_left), 0)))
 
 
-def game_init(screen: pygame.Surface, cofiguration: confing) -> tuple:
+def game_init(screen: pygame.Surface, cofiguration: confing) -> Any:
     origin = MAZE_ORIGIN
     window_width, window_height = screen.get_size()
     level_maze, size = make_level(

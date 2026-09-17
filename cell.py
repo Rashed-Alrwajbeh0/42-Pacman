@@ -303,7 +303,7 @@ class PacMan:
         self.__desplay(
             pos=self.pos, rotation=rotation_map.get(self.direction, 0))
 
-    def reset_atfer_eaten(self, cheat=0):
+    def reset_atfer_eaten(self, cheat: int = 0) -> None:
         if not cheat:
             self.lives -= 1
             if self.lives == 0:

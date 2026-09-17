@@ -5,7 +5,7 @@ from menu import Button
 from typing import Optional
 
 
-def draw_table(screen: pygame.Surface):
+def draw_table(screen: pygame.Surface) -> None:
     pygame.draw.line(
             surface=screen,
             color="yellow",
@@ -35,7 +35,7 @@ def draw_table(screen: pygame.Surface):
             width=3)
 
 
-def draw_fonts(screen: pygame.Surface, font: pygame.Font):
+def draw_fonts(screen: pygame.Surface, font: pygame.Font) -> None:
     text = font.render("Pacman move up", True, "white")
     screen.blit(text, (460, 290))
     text = font.render("Pacman move right", True, "white")
@@ -53,9 +53,9 @@ class Field:
             width: int,
             height: int,
             border: int,
-            border_color: str,
+            border_color: str | tuple[int, int, int],
             border_radius: int,
-            font_color: str,
+            font_color: str | tuple[int, int, int],
             font_type: str = "fonts/1.ttf",
             font_size: int = 40) -> None:
 
@@ -133,9 +133,9 @@ class Field:
 def show_controls(
         screen: pygame.Surface,
         frame_clock: pygame.Clock,
-        font_path: pygame.Font,
+        font_path: str,
         field_containers: dict[str, str],
-        movimg_dict: dict[str, pygame.Event]):
+        movimg_dict: dict[str, int]) -> tuple[dict[str, int], dict[str, str]]:
     Save_button = Button(
         pos=(700, 800),
         text="Save",
@@ -147,8 +147,8 @@ def show_controls(
         border_radius=5,
         font_size=30
     )
-    font = pygame.font.Font(font_path, 50)
-    font2 = pygame.font.Font(font_path, 40)
+    font = pygame.font.Font(font_path, 40)
+    font2 = pygame.font.Font(font_path, 30)
     up_field = Field(
         pos=(800, 275),
         width=150,
@@ -294,7 +294,7 @@ def show_controls(
                 down_field.is_active = False
                 left_field.is_active = False
                 right_field.is_active = True
-        if leter:
+        if leter and leter_key:
             valus = list(movimg_dict.values())
             if leter_key not in valus:
                 if up_field.is_active:
