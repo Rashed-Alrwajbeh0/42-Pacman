@@ -1,5 +1,4 @@
 from typing import Optional
-
 import pygame
 from mazegenerator import MazeGenerator
 from cell import Cell, Gum, Pac_Gum, Super_Pac_Gum
@@ -54,10 +53,9 @@ class Maze:
             y = randint(0, self.height - 1)
             if (not self.grid[y][x].is_pattern and
                 (x, y) not in corners and
-                not self.grid[y][x].content_id):
+                    not self.grid[y][x].content_id):
                 self.grid[y][x].content_id = Cell.PACGUM
                 placed += 1
-
 
     def center_cell(self) -> Cell:
         return self.grid[self.height // 2][self.width // 2]
@@ -137,7 +135,9 @@ class Maze:
     def draw(self, screen: pygame.Surface, cell_size: int,
              origin: tuple[int, int] = (0, 0),
              wall_color: tuple[int, int, int] = (255, 255, 51),
-             pattern_color: tuple[int, int, int] = (0, 209, 255)) -> list[list[Cell]]:
+             pattern_color: tuple[int, int, int] = (0,
+                                                    209,
+                                                    255)) -> list[list[Cell]]:
         ox, oy = origin
 
         for y in range(self.height):
@@ -173,8 +173,10 @@ class Maze:
                         (px + cell_size, py),
                         (px + cell_size, py + cell_size), 2)
 
-                if cell.content_id == Cell.PACGUM and cell.content is not None:
+                if (cell.content_id == Cell.PACGUM and
+                        cell.content is not None):
                     cell.content.draw(screen)
-                elif (cell.content_id == Cell.SUPER_PACGUM and cell.content is not None):
+                elif (cell.content_id == Cell.SUPER_PACGUM and
+                      cell.content is not None):
                     cell.content.draw(screen)
         return self.grid

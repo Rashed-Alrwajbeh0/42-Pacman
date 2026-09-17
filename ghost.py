@@ -13,7 +13,7 @@ from maze import Maze
 
 position = tuple[int, int]
 FLEE_DISTANCE_THRESHOLD = 4
-PLAYER_BASE_SPEED = 90.0 
+PLAYER_BASE_SPEED = 90.0
 
 
 def manhattan_distance(a: position, b: position) -> int:
@@ -121,7 +121,8 @@ def seek_pacgum_near_player(
     if not targets:
         return next_step_towards(maze, ghost_pos, player_pos)
 
-    best_gum = min(targets, key=lambda gum: manhattan_distance(gum, player_pos))
+    best_gum = min(targets,
+                   key=lambda gum: manhattan_distance(gum, player_pos))
 
     if ghost_pos == best_gum:
         return next_step_towards(maze, ghost_pos, player_pos)

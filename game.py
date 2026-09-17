@@ -1,14 +1,17 @@
 import sys
-
 import pygame
-
 from cell import PacMan, Super_Pac_Gum
 from conf import confing
 from ghost import (
-    chase_then_flee, next_step_towards, ghost_speed_for_level, random_walk, seek_pacgum_near_player,
+    chase_then_flee,
+    next_step_towards,
+    ghost_speed_for_level,
+    random_walk,
+    seek_pacgum_near_player,
 )
 from ghost_entity import Ghost, Ghoststate
 from maze import Maze
+
 
 current_level = 0
 HUD_HEIGHT = 60
@@ -116,7 +119,8 @@ def make_level(
         )
         cell_size = compute_layout(
             window_width, window_height, maze.width, maze.height)
-        maze.put_pacgums_in_cells(cell_size=cell_size, origin=MAZE_ORIGIN, conf=configuration)
+        maze.put_pacgums_in_cells(
+            cell_size=cell_size, origin=MAZE_ORIGIN, conf=configuration)
         current_level += 1
         return maze, cell_size
     except RuntimeError as exc:
@@ -180,7 +184,8 @@ _HUD_DIM = (150, 150, 170)
 _PAUSE_GOLD = (255, 213, 0)
 
 
-def show_pause_menu(screen: pygame.Surface, frame_clock: pygame.time.Clock) -> str:
+def show_pause_menu(
+        screen: pygame.Surface, frame_clock: pygame.time.Clock) -> str:
     """Show the pause overlay. Returns 'resume' or 'menu'"""
     width, height = screen.get_size()
     font_title = pygame.font.SysFont(None, 60, bold=True)
@@ -208,7 +213,8 @@ def show_pause_menu(screen: pygame.Surface, frame_clock: pygame.time.Clock) -> s
         screen.blit(overlay, (0, 0))
 
         title = font_title.render("PAUSED", True, _PAUSE_GOLD)
-        screen.blit(title, title.get_rect(center=(width // 2, height // 2 - 120)))
+        screen.blit(
+            title, title.get_rect(center=(width // 2, height // 2 - 120)))
         pygame.draw.rect(screen, _PAUSE_GOLD, resume_rect, border_radius=14)
         text = font_btn.render("Resume", True, "black")
         screen.blit(text, text.get_rect(center=resume_rect.center))
@@ -217,6 +223,7 @@ def show_pause_menu(screen: pygame.Surface, frame_clock: pygame.time.Clock) -> s
         screen.blit(text, text.get_rect(center=menu_rect.center))
         pygame.display.update()
         frame_clock.tick(60)
+
 
 def _rounded_panel(
         screen: pygame.Surface,
@@ -237,9 +244,7 @@ def draw_hud(
         level: int,
         time_left: float,
         maze_origin: tuple[int, int],
-        maze_pixel_w: int,
-        level_max_time: float = 90.0,
-        panel_width: int = HUD_PANEL_WIDTH,
+        maze_pixel_w: int
 ) -> None:
     ox, oy = maze_origin
     box_w = 180
@@ -253,21 +258,21 @@ def draw_hud(
 
     def draw_box(x: int, y: int, label: str, value: str) -> None:
         rect = pygame.Rect(x, y, box_w, box_h)
-        _rounded_panel(screen, rect, _HUD_BG_LIGHT, border_color=_HUD_ACCENT, radius=12)
+        _rounded_panel(
+            screen, rect, _HUD_BG_LIGHT, border_color=_HUD_ACCENT, radius=12)
         label_surf = label_font.render(label.upper(), True, _HUD_DIM)
         screen.blit(label_surf, (rect.left + 12, rect.top + 8))
         value_surf = value_font.render(value, True, _HUD_TEXT)
         screen.blit(value_surf, (rect.left + 12, rect.top + 30))
-
-    start_y = oy + vertical_offset   
-
+    start_y = oy + vertical_offset
     left_x = ox - gap_from_maze - box_w
     draw_box(left_x, start_y, "Score", f"{score:,}")
     draw_box(left_x, start_y + box_h + gap, "Lives", str(lives))
 
     right_x = ox + maze_pixel_w + gap_from_maze
     draw_box(right_x, start_y, "Level", str(level))
-    draw_box(right_x, start_y + box_h + gap, "Time", str(max(int(time_left), 0)))
+    draw_box(
+        right_x, start_y + box_h + gap, "Time", str(max(int(time_left), 0)))
 
 
 def game_init(screen: pygame.Surface, cofiguration: confing) -> tuple:
@@ -304,10 +309,30 @@ def game_init(screen: pygame.Surface, cofiguration: confing) -> tuple:
     ]
     ghost_speed = ghost_speed_for_level(current_level, 100, 5, 140)
     ghosts = [
-        Ghost(corners[0], corners[0], (255, 0, 0), chase_then_flee, speed=ghost_speed),
-        Ghost(corners[1], corners[1], (255, 165, 0), next_step_towards, speed=ghost_speed),
-        Ghost(corners[2], corners[2], (255, 105, 180), seek_pacgum_near_player, speed=ghost_speed),
-        Ghost(corners[3], corners[3], (0, 200, 255), random_walk, speed=ghost_speed),
+        Ghost(
+            corners[0],
+            corners[0],
+            (255, 0, 0),
+            chase_then_flee,
+            speed=ghost_speed),
+        Ghost(
+            corners[1],
+            corners[1],
+            (255, 165, 0),
+            next_step_towards,
+            speed=ghost_speed),
+        Ghost(
+            corners[2],
+            corners[2],
+            (255, 105, 180),
+            seek_pacgum_near_player,
+            speed=ghost_speed),
+        Ghost(
+            corners[3],
+            corners[3],
+            (0, 200, 255),
+            random_walk,
+            speed=ghost_speed),
     ]
     collision_radius = max(size / 2, 12.0)
     Invincibility = False
@@ -332,6 +357,7 @@ def game_init(screen: pygame.Surface, cofiguration: confing) -> tuple:
             time_left,
             direction,
             Stop_timer)
+
 
 def game_play(
         screen: pygame.Surface,
@@ -366,11 +392,11 @@ def game_play(
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                 if event.key == pygame.K_SPACE:
-                     action = show_pause_menu(screen, fram_clock)
-                     if action == "menu":
-                         return "menu", score
-                 if cheat:
+                if event.key == pygame.K_SPACE:
+                    action = show_pause_menu(screen, fram_clock)
+                    if action == "menu":
+                        return "menu", score
+                if cheat:
                     if event.key == pygame.K_F1:
                         Invincibility = not Invincibility
                     if event.key == pygame.K_F2:
@@ -392,7 +418,9 @@ def game_play(
                          edible_timer,
                          time_left,
                          direction,
-                         Stop_timer) = game_init(screen=screen, cofiguration=cofiguration)
+                         Stop_timer) = game_init(
+                             screen=screen,
+                             cofiguration=cofiguration)
                         continue
                     if event.key == pygame.K_F3:
                         pacman.lives += 1
@@ -404,7 +432,12 @@ def game_play(
                         Stop_timer = not Stop_timer
 
         draw_background(screen=screen, image_path=BACKGROUND_IMAGE, alpha=100)
-        level_maze.draw(screen, size, origin, wall_color=WALL_COLOR, pattern_color=WALL_COLOR)
+        level_maze.draw(
+            screen,
+            size,
+            origin,
+            wall_color=WALL_COLOR,
+            pattern_color=WALL_COLOR)
 
         keyboard = pygame.key.get_pressed()
         if keyboard[direction_key["top"]]:
@@ -436,7 +469,7 @@ def game_play(
 
         if current_cell.content_id != 0 and current_cell.content is not None:
             score += getattr(current_cell.content, 'points', 10)
-            
+
             if isinstance(current_cell.content, Super_Pac_Gum):
                 for ghost in ghosts:
                     if ghost.state != Ghoststate.Eaten:
@@ -448,11 +481,11 @@ def game_play(
 
         if edible_timer > 0:
             edible_timer -= dt
-        
         for ghost in ghosts:
-            if edible_timer <= 0 and ghost.state in (Ghoststate.Edible, Ghoststate.Waiting):
+            if edible_timer <= 0 and ghost.state in (
+                                            Ghoststate.Edible,
+                                            Ghoststate.Waiting):
                 ghost.state = Ghoststate.Chasing
-
         player_cell = where_i_am(
             point=pacman.pos, cell_size=size, origin=origin, maze=level_maze)
         if cheat and Ghost_freeze:
@@ -463,7 +496,11 @@ def game_play(
             ghost.update(level_maze, player_cell, dt, size, origin, G_speed)
 
         life_lost, points_gained = check_ghost_collisions(
-            ghosts, pacman, cofiguration.points_per_ghost, collision_radius, Invincibility)
+            ghosts,
+            pacman,
+            cofiguration.points_per_ghost,
+            collision_radius,
+            Invincibility)
         score += points_gained
         if not Stop_timer:
             time_left -= dt
@@ -483,7 +520,6 @@ def game_play(
                     ghost.target_pos = ghost.corner
                     ghost.pixel_pos = None
                     ghost.state = Ghoststate.Chasing
-
 
         if level_maze.remaining_pacgums() == 0:
             if current_level >= 10:
@@ -520,6 +556,5 @@ def game_play(
             screen, score, pacman.lives, current_level,
             maze_origin=origin,
             time_left=time_left,
-            maze_pixel_w=level_maze.width * size,
-            level_max_time=float(cofiguration.level_max_time))
+            maze_pixel_w=level_maze.width * size)
         pygame.display.update()

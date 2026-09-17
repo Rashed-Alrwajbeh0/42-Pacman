@@ -196,7 +196,7 @@ def show_menu(
         start_button.draw(screen, (620, 367))
         high_score_button.draw(screen, (620, 450))
         controls_button.draw(screen, (620, 527))
-        instructions_button.draw(screen,(620, 607))
+        instructions_button.draw(screen, (620, 607))
         exit_button.draw(screen, (620, 687))
 
         if pygame.mouse.get_just_pressed()[0]:
@@ -225,7 +225,7 @@ def show_menu(
                 controls_key, controls_leters = show_controls(
                     screen=screen,
                     frame_clock=fram_clock,
-                    font_path="fonts//Roboto/static/Roboto_Condensed-Regular.ttf",
+                    font_path="fonts//Roboto/static/Roboto.ttf",
                     field_containers=controls_leters,
                     movimg_dict=controls_key)
 

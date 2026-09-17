@@ -11,6 +11,20 @@ _GOLD = (255, 213, 0)
 _BG_PANEL = (18, 18, 40)
 
 
+def collidepoint(
+        point: tuple[int],
+        button_y_top: int,
+        button_y_bottom: int,
+        button_x_left: int,
+        button_x_right: int
+        ):
+    px, py = point
+    return (px <= button_x_right and
+            px >= button_x_left and
+            py >= button_y_top and
+            py <= button_y_bottom)
+
+
 def show_score(screen: pygame.Surface, conf: confing) -> None:
     """Show the top 10 highscores. Press ESC or click to return."""
     frame_clock = pygame.time.Clock()
@@ -28,7 +42,13 @@ def show_score(screen: pygame.Surface, conf: confing) -> None:
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return
-            if event.type == pygame.MOUSEBUTTONDOWN and back_rect.collidepoint(event.pos):
+            if event.type == pygame.MOUSEBUTTONDOWN and collidepoint(
+                point=event.pos,
+                button_x_left=back_rect.left,
+                button_x_right=back_rect.right,
+                button_y_bottom=back_rect.bottom,
+                button_y_top=back_rect.top
+            ):
                 return
 
         draw_background(screen=screen, image_path="Pictures/8.jpg", alpha=200)
@@ -41,21 +61,39 @@ def show_score(screen: pygame.Surface, conf: confing) -> None:
         pygame.draw.rect(screen, _GOLD, panel, width=3, border_radius=18)
 
         header_y = panel.top + 20
-        screen.blit(header_font.render("RANK", True, _GOLD), (panel.left + 40, header_y))
-        screen.blit(header_font.render("NAME", True, _GOLD), (panel.left + 180, header_y))
-        screen.blit(header_font.render("SCORE", True, _GOLD), (panel.right - 160, header_y))
-        pygame.draw.line(screen, _GOLD, (panel.left + 20, header_y + 34),
-                          (panel.right - 20, header_y + 34), 1)
+        screen.blit(
+            header_font.render("RANK", True, _GOLD),
+            (panel.left + 40, header_y))
+        screen.blit(
+            header_font.render("NAME", True, _GOLD),
+            (panel.left + 180, header_y))
+        screen.blit(
+            header_font.render("SCORE", True, _GOLD),
+            (panel.right - 160, header_y))
+        pygame.draw.line(
+            screen,
+            _GOLD,
+            (panel.left + 20, header_y + 34),
+            (panel.right - 20, header_y + 34), 1)
 
         row_y = header_y + 50
         if not entries:
-            empty = row_font.render("No scores yet — be the first!", True, "white")
-            screen.blit(empty, empty.get_rect(centerx=panel.centerx, y=row_y + 20))
+            empty = row_font.render(
+                "No scores yet — be the first!", True, "white")
+            screen.blit(
+                empty,
+                empty.get_rect(centerx=panel.centerx, y=row_y + 20))
         for i, entry in enumerate(entries[:10]):
             color = _GOLD if i < 3 else "white"
-            screen.blit(row_font.render(f"{i + 1}.", True, color), (panel.left + 40, row_y))
-            screen.blit(row_font.render(entry["name"], True, color), (panel.left + 180, row_y))
-            screen.blit(row_font.render(str(entry["score"]), True, color), (panel.right - 160, row_y))
+            screen.blit(
+                row_font.render(f"{i + 1}.", True, color),
+                (panel.left + 40, row_y))
+            screen.blit(
+                row_font.render(entry["name"], True, color),
+                (panel.left + 180, row_y))
+            screen.blit(
+                row_font.render(str(entry["score"]), True, color),
+                (panel.right - 160, row_y))
             row_y += 48
 
         pygame.draw.rect(screen, _GOLD, back_rect, border_radius=14)

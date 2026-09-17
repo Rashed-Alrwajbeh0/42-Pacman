@@ -3,7 +3,6 @@ from sys import exit
 from game import draw_background
 from menu import Button
 from typing import Optional
-from menu import Button
 
 
 def draw_table(screen: pygame.Surface):
@@ -34,6 +33,7 @@ def draw_table(screen: pygame.Surface):
             start_pos=(440, 635),
             end_pos=(1160, 635),
             width=3)
+
 
 def draw_fonts(screen: pygame.Surface, font: pygame.Font):
     text = font.render("Pacman move up", True, "white")
@@ -249,11 +249,16 @@ def show_controls(
             if event.type == pygame.QUIT:
                 exit()
             if event.type == pygame.KEYDOWN:
-                if event.key not in [pygame.K_TAB, pygame.K_SPACE, pygame.K_ESCAPE]:
+                if event.key not in [pygame.K_TAB,
+                                     pygame.K_SPACE,
+                                     pygame.K_ESCAPE]:
                     leter_id = 0
                     leter = event.unicode
                     leter_key = event.key
-        draw_background(screen=screen, image_path="Pictures/Backgrounds/controls.png", alpha=200)
+        draw_background(
+            screen=screen,
+            image_path="Pictures/Backgrounds/controls.png",
+            alpha=200)
         draw_table(screen=screen)
         text = font.render("Pacman moving controls", True, "yellow")
         screen.blit(text, (550, 170))

@@ -11,14 +11,21 @@ _GOLD = (255, 213, 0)
 def _frame(screen: pygame.Surface, color: tuple[int, int, int]) -> None:
     """Draw a glowing border frame around the whole screen."""
     rect = screen.get_rect().inflate(-40, -40)
-    pygame.draw.rect(screen, tuple(c // 4 for c in color), rect.inflate(10, 10), width=6, border_radius=24)
+    pygame.draw.rect(
+        screen,
+        tuple(c // 4 for c in color),
+        rect.inflate(10, 10),
+        width=6,
+        border_radius=24)
     pygame.draw.rect(screen, color, rect, width=3, border_radius=20)
 
 
 def _button(screen: pygame.Surface, rect: pygame.Rect, text: str,
             font: pygame.font.Font, color: tuple[int, int, int]) -> None:
     """Draw one glowing, filled, rounded button with centered text."""
-    pygame.draw.rect(screen, tuple(c // 4 for c in color), rect.inflate(8, 8), border_radius=18)
+    pygame.draw.rect(
+        screen,
+        tuple(c // 4 for c in color), rect.inflate(8, 8), border_radius=18)
     pygame.draw.rect(screen, color, rect, border_radius=14)
     label = font.render(text, True, "black")
     screen.blit(label, label.get_rect(center=rect.center))
@@ -76,16 +83,30 @@ def _end_screen(
         _frame(screen, title_color)
 
         title_surf = big_font.render(title, True, title_color)
-        shadow = big_font.render(title, True, tuple(c // 4 for c in title_color))
-        screen.blit(shadow, shadow.get_rect(centerx=panel.centerx + 3, y=panel.top + 30))
-        screen.blit(title_surf, title_surf.get_rect(centerx=panel.centerx, y=panel.top + 27))
+        shadow = big_font.render(
+            title,
+            True,
+            tuple(c // 4 for c in title_color))
+        screen.blit(
+            shadow,
+            shadow.get_rect(centerx=panel.centerx + 3, y=panel.top + 30))
+        screen.blit(
+            title_surf,
+            title_surf.get_rect(centerx=panel.centerx, y=panel.top + 27))
 
         score_surf = font.render(f"Final Score: {score:,}", True, "white")
-        screen.blit(score_surf, score_surf.get_rect(centerx=panel.centerx, y=panel.top + 120))
+        screen.blit(
+            score_surf,
+            score_surf.get_rect(centerx=panel.centerx, y=panel.top + 120))
 
         if typing:
-            hint = font.render("New highscore! Type your name + Enter:", True, _GOLD)
-            screen.blit(hint, hint.get_rect(centerx=panel.centerx, y=panel.top + 190))
+            hint = font.render(
+                "New highscore! Type your name + Enter:",
+                True,
+                _GOLD)
+            screen.blit(
+                hint,
+                hint.get_rect(centerx=panel.centerx, y=panel.top + 190))
             box = pygame.Rect(0, 0, 320, 54)
             box.center = (panel.centerx, panel.top + 260)
             pygame.draw.rect(screen, (28, 28, 50), box, border_radius=12)
@@ -100,14 +121,30 @@ def _end_screen(
         clock.tick(60)
 
 
-def show_game_over(screen: pygame.Surface, score: int, is_top_10: bool) -> tuple[str, str | None]:
+def show_game_over(
+        screen: pygame.Surface,
+        score: int,
+        is_top_10: bool) -> tuple[str, str | None]:
     """Show the Game Over screen. Returns ("replay"/"menu", name)."""
-    return _end_screen(screen, "YOU LOST", (220, 60, 60), score, is_top_10, "Play Again")
+    return _end_screen(
+        screen,
+        "YOU LOST",
+        (220, 60, 60),
+        score, is_top_10,
+        "Play Again")
 
 
 def show_victory(
-        screen: pygame.Surface, score: int, is_top_10: bool, has_next_level: bool,
+        screen: pygame.Surface,
+        score: int,
+        is_top_10: bool,
+        has_next_level: bool,
 ) -> tuple[str, str | None]:
     """Show the Victory screen. Returns ("continue"/"menu", name)."""
     label = "Next Level" if has_next_level else None
-    return _end_screen(screen, "YOU WIN!", (100, 220, 120), score, is_top_10, label)
+    return _end_screen(screen,
+                       "YOU WIN!",
+                       (100, 220, 120),
+                       score,
+                       is_top_10,
+                       label)
