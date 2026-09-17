@@ -374,6 +374,7 @@ def game_play(
                     if event.key == pygame.K_F1:
                         Invincibility = not Invincibility
                     if event.key == pygame.K_F2:
+                        print(current_level)
                         (fram_clock,
                          pacman,
                          level_maze,
@@ -486,6 +487,7 @@ def game_play(
 
         if level_maze.remaining_pacgums() == 0:
             if current_level >= 10:
+                current_level = 0
                 return "win", score
             remaining_lives = pacman.lives
             (fram_clock,
@@ -508,7 +510,9 @@ def game_play(
              Stop_timer) = game_init(screen=screen, cofiguration=cofiguration)
             pacman.lives = remaining_lives
             continue
-
+        if current_level > 10:
+            current_level = 0
+            return "win", score
         for ghost in ghosts:
             ghost.draw(screen, size, origin)
 

@@ -42,9 +42,7 @@ class Maze:
         ]
         for x, y in corners:
             self.grid[y][x].content_id = Cell.SUPER_PACGUM
-        x_choise = {0, self.width - 1}
-        y_choise = {0, self.height - 1}
-        # number_of_gums += 1
+
         if number_of_gums > 607:
             number_of_gums = 607
         placed = 0
