@@ -153,8 +153,9 @@ class confing(BaseModel):
 def read_json(FileName: str) -> confing:
     try:
         with open(FileName, "r") as file:
-            data = dict()
-            data = json.load(file)
+            lines = [ln for ln in file
+                     if not ln.strip().startswith(("#", "//"))]
+            data = json.loads("".join(lines))
             sorted_data = dict()
             for i in data.keys():
                 if i.lower() not in ConfigurationKeys:

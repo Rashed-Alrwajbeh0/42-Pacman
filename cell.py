@@ -306,6 +306,6 @@ class PacMan:
     def reset_atfer_eaten(self, cheat: int = 0) -> None:
         if not cheat:
             self.lives -= 1
-            if self.lives == 0:
+            if self.lives <= 0:
                 raise ValueError("Finish Lives")
             self.pos = self.__center_pos

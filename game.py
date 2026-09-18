@@ -269,16 +269,10 @@ def game_play(
                     action = show_pause_menu(screen, fram_clock)
                     if action == "lose":
                         return "lose", score
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if pause_button_rect.collidepoint(event.pos):
-                    action = show_pause_menu(screen, fram_clock)
-                    if action == "menu":
-                        return "menu", score
                 if cheat:
                     if event.key == pygame.K_F1:
                         Invincibility = not Invincibility
                     if event.key == pygame.K_F2:
-                        print(current_level)
                         (fram_clock,
                          pacman,
                          level_maze,
@@ -300,6 +294,11 @@ def game_play(
                              screen=screen,
                              cofiguration=cofiguration)
                         continue
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pause_button_rect.collidepoint(event.pos):
+                    action = show_pause_menu(screen, fram_clock)
+                    if action == "menu":
+                        return "menu", score
                     if event.key == pygame.K_F3:
                         pacman.lives += 1
                     if event.key == pygame.K_F4:

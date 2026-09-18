@@ -2,6 +2,7 @@ import sys
 import pygame
 from config import read_json
 from menu import show_menu
+from pathlib import Path
 
 argv = sys.argv
 if len(argv) != 2:
@@ -13,6 +14,12 @@ if not argv[1].endswith(".json"):
 
 configuration = read_json(argv[1])
 pygame.init()
+
+for folder in ("Pictures", "fonts"):
+    if not Path(folder).is_dir():
+        print(f"Error: the '{folder}' folder is missing !!")
+        sys.exit(1)
+
 
 screen = pygame.display.set_mode((1600, 900))
 frame_clock = pygame.time.Clock()
