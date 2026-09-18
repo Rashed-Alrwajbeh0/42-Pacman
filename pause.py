@@ -1,8 +1,9 @@
 """Pause overlay shown mid-game: resume or return to the main menu."""
 
+from scores import collidepoint
+import pygame
 import sys
 
-import pygame
 
 _PAUSE_GOLD = (255, 213, 0)
 
@@ -25,9 +26,19 @@ def show_pause_menu(
                 return "resume"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                if resume_rect.collidepoint(pos):
+                if collidepoint(
+                            point=pos,
+                            button_x_left=resume_rect.left,
+                            button_x_right=resume_rect.right,
+                            button_y_bottom=resume_rect.bottom,
+                            button_y_top=resume_rect.top):
                     return "resume"
-                if menu_rect.collidepoint(pos):
+                if collidepoint(
+                            point=pos,
+                            button_x_left=menu_rect.left,
+                            button_x_right=menu_rect.right,
+                            button_y_bottom=menu_rect.bottom,
+                            button_y_top=menu_rect.top):
                     return "lose"
 
         overlay = pygame.Surface((width, height))

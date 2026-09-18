@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from game import draw_background
+from render import draw_background
 from menu import Button
 from typing import Optional
 

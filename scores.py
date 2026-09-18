@@ -4,7 +4,7 @@ rest of the game's UI."""
 import pygame
 from sys import exit
 from config import confing
-from game import draw_background
+from render import draw_background
 from highscore import get_top_10
 
 _GOLD = (255, 213, 0)
