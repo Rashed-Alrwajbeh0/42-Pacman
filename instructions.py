@@ -5,6 +5,17 @@ from menu import Button
 
 
 def show_instructions(screen: pygame.Surface) -> None:
+    """
+    Manages and renders the instructions screen,explaining the gameplay rules,
+    controls, levels, super powers, scoring, and hidden cheat mode features.
+
+    Args:
+        screen (pygame.Surface): The main Pygame display surface
+        where the instructions are drawn.
+
+    Returns:
+        None
+    """
     frame_clock = pygame.time.Clock()
     font = pygame.font.Font(
         "fonts//Roboto/static/Roboto_Condensed-Regular.ttf", size=40)

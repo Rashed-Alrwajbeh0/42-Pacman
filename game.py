@@ -139,6 +139,8 @@ def where_i_am(
         origin: tuple[int, int],
         maze: Maze,
 ) -> tuple[int, int]:
+    """Thi functio take the pos in pixel and determain
+    the index of the cell that contain it"""
     ox, oy = origin
     px, py = point
     grid_x = max(0, min(maze.width - 1, (px - ox) // cell_size))
@@ -154,6 +156,55 @@ def game_init(screen: pygame.Surface, cofiguration: confing) -> Any:
         window_width=window_width,
         window_height=window_height,
     )
+    """
+    Initializes the game state, maze structure, player (Pac-Man),
+    ghosts, timers, and configuration settings required to run a level.
+
+    Args:
+        screen (pygame.Surface): The main Pygame display surface for the game.
+        cofiguration (confing):
+            The configuration object containing level settings, lives,
+                and timing rules.
+
+    Returns:
+        tuple: A large tuple containing all initialized game variables:
+            - fram_clock (pygame.time.Clock):
+                Clock object for managing the frame rate.
+            - pacman (PacMan):
+                The initialized player instance.
+            - level_maze (Maze):
+                The generated level maze layout.
+            - size (int/float):
+                The calculated cell size for the maze.
+            - origin (tuple):
+                The origin coordinate offset of the maze.
+            - hight (int):
+                The height dimensions from the configuration.
+            - width (int):
+                The width dimensions from the configuration.
+            - ghosts (list[Ghost]):
+                A list of initialized ghost instances.
+            - collision_radius (float):
+                The collision radius boundary for entities.
+            - ghost_speed (float/int):
+                The movement speed calculated for the ghosts.
+            - Invincibility (bool):
+                Flag indicating invincibility status (default False).
+            - Ghost_freeze (bool):
+                Flag indicating if ghosts are frozen (default False).
+            - Increased_speed (bool):
+                Flag indicating speed boost status (default False).
+            - score (int):
+                The initial player score (0).
+            - edible_timer (float):
+                Timer for edible ghosts mechanic (0.0).
+            - time_left (float):
+                Remaining time for the level.
+            - direction (str):
+                Initial movement direction ("right").
+            - Stop_timer (bool):
+                Flag indicating if the level timer is stopped (default False).
+    """
     fram_clock = pygame.time.Clock()
     width = cofiguration.levels["width"]
     hight = cofiguration.levels["height"]
@@ -235,7 +286,27 @@ def game_play(
         cofiguration: confing,
         direction_key: dict[str, int],
         cheat: bool = False) -> tuple[str, int]:
-    """Run one full game session and return ("win"/"lose", final_score)."""
+    """
+    Manages the main game loop for a Pac-Man level, handling player movement,
+    ghost updates, collision detection, score keeping, timers, and cheat keys.
+
+    Args:
+        screen (pygame.Surface):
+            The main Pygame display surface for rendering the game.
+        cofiguration (confing):
+            The configuration object providing level rules, dimensions,
+                lives, and timing limits.
+        direction_key (dict[str, int]):
+            A dictionary mapping direction strings ("top", "bottom",
+                "left", "right") to Pygame key constants.
+        cheat (bool):
+            Flag enabling special cheat key bindings (F1-F6) for testing.
+
+    Returns:
+        tuple[str, int]:
+            A tuple containing the game outcome status ("win" or "lose")
+                and the final player score achieved.
+    """
     global current_level
     if current_level:
         current_level = 0

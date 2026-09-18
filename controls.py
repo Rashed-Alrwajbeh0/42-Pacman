@@ -6,6 +6,7 @@ from typing import Optional
 
 
 def draw_table(screen: pygame.Surface) -> None:
+    "This function just draw some lines on the screen"
     pygame.draw.line(
             surface=screen,
             color="yellow",
@@ -36,6 +37,7 @@ def draw_table(screen: pygame.Surface) -> None:
 
 
 def draw_fonts(screen: pygame.Surface, font: pygame.Font) -> None:
+    "This function just draw some fontts on the screen"
     text = font.render("Pacman move up", True, "white")
     screen.blit(text, (460, 290))
     text = font.render("Pacman move right", True, "white")
@@ -47,6 +49,30 @@ def draw_fonts(screen: pygame.Surface, font: pygame.Font) -> None:
 
 
 class Field:
+    """
+    A class representing an interactive text input field in Pygame.
+    Attributes:-
+        pos (tuple[int, int]):-
+            The (x, y) coordinates of the top-left corner of the field.
+        is_active (bool):-
+            Flag indicating whether the field is currently active/selected.
+        show_error (bool):-
+            Flag indicating whether an error state is active.
+        Field_rect (pygame.Rect):-
+            The rectangular boundary of the text field.
+        border (int):-
+            The thickness of the field's border (0 for no fill/border styling).
+        border_color (str | tuple[int, int, int]):-
+            The color of the field's border.
+        border_radius (int):-
+            The corner radius for rounded borders.
+        text (str):-
+            The current text entered in the field.
+        font_color (str | tuple[int, int, int]):-
+            The color of the rendered text.
+        field_font_type (pygame.font.Font):-
+            The font object used for rendering text.
+    """
     def __init__(
             self,
             pos: tuple[int, int],
@@ -58,6 +84,8 @@ class Field:
             font_color: str | tuple[int, int, int],
             font_type: str = "fonts/1.ttf",
             font_size: int = 40) -> None:
+        """Initializes the Field instance with position,
+        dimensions, and styling properties."""
 
         self.pos = pos
         self.is_active = False
@@ -80,6 +108,16 @@ class Field:
             font_size)
 
     def collision(self, point: tuple[int, int]) -> bool:
+        """
+        Checks if a given point collides with the field.
+
+        Args:
+            point (tuple[int, int]): The (x, y) coordinates to check.
+
+        Returns:
+            bool:-
+                True if the point is inside the field, False otherwise.
+        """
         px, py = point
         button_x_left = self.Field_rect.left
         button_x_right = self.Field_rect.right
@@ -94,6 +132,21 @@ class Field:
             self,
             leter_id: Optional[int],
             leter: Optional[str]) -> Optional[int]:
+        """
+        Updates the text content based on
+        user keyboard input when the field is active.
+
+        Args:
+            leter_id (Optional[int]):-
+                Action identifier(-1 for backspace, 1 for enter, 0 for typing).
+            leter (Optional[str]):-
+                The unicode character typed by the user.
+
+        Returns:
+                1 if Enter is pressed
+                0 during normal typing
+                or None if inactive.
+        """
         if self.is_active:
             self.text = ""
             if leter_id == -1:
@@ -116,6 +169,21 @@ class Field:
             screen: pygame.Surface,
             x_space: int = 10,
             y_space: int = 5) -> None:
+        """
+        Renders the text field border and its
+        current text onto the game screen.
+
+        Args:
+            screen (pygame.Surface):-
+                The target Pygame surface to draw onto.
+            x_space (int):-
+                Horizontal padding offset for the text inside the field.
+            y_space (int):-
+                Vertical padding offset for the text inside the field.
+
+        Returns:
+            None
+        """
         self.font = self.field_font_type.render(
                 self.text, True, self.font_color)
         pygame.draw.rect(
@@ -136,6 +204,29 @@ def show_controls(
         font_path: str,
         field_containers: dict[str, str],
         movimg_dict: dict[str, int]) -> tuple[dict[str, int], dict[str, str]]:
+    """
+    Manages the controls configuration screen,
+    allowing the user to view, customize,
+    and reset movement keybindings for Pac-Man.
+
+    Args:
+        screen (pygame.Surface):
+            The main Pygame display surface where elements are drawn.
+        frame_clock (pygame.Clock):
+            The clock object used to control the frame rate (FPS).
+        font_path (str):
+            The file path to the font used for rendering text.
+        field_containers (dict[str, str]):
+            A dictionary containing current text representations
+            of the key bindings for directions("top", "down", "left", "right").
+        movimg_dict (dict[str, int]):
+            A dictionary mapping movement directions to Pygame key constants.
+
+    Returns:
+        tuple[dict[str, int], dict[str, str]]:-
+            A tuple containing the updated 'movimg_dict'
+        and 'field_containers' dictionaries after saving changes.
+    """
     Save_button = Button(
         pos=(700, 800),
         text="Save",

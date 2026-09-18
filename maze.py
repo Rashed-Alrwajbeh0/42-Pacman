@@ -7,10 +7,24 @@ import pygame
 
 
 class Maze:
+    """
+    A class representing the game maze grid, managing walls,
+    paths, items (gums/super gums), and rendering logic using Pygame.
+
+    Attributes:
+        width (int): The width of the maze in grid units.
+        height (int): The height of the maze in grid units.
+        entry (tuple[int, int]): The starting coordinate point of the maze.
+        exit (tuple[int, int]): The ending coordinate point of the maze.
+        shortest_path (list): The calculated shortest path through the maze.
+        grid (list[list[Cell]]): A 2D grid matrix containing Cell instances.
+    """
     def __init__(
             self, width: int, height: int,
             number_of_gums: int, seed: int = 0,
             perfect: bool = False) -> None:
+        """Initializes the Maze generator, constructs the grid,
+        and places items."""
         self.width = width
         self.height = height
 
@@ -33,6 +47,7 @@ class Maze:
         self._place_content(number_of_gums)
 
     def _place_content(self, number_of_gums: int) -> None:
+        """Randomly places regular and super Pac-Gums into valid grid cells."""
         seed(None)
         corners = [
             (0, 0),
@@ -59,9 +74,22 @@ class Maze:
                 placed += 1
 
     def center_cell(self) -> Cell:
+        """
+        Returns the center cell of the maze grid.
+
+        Returns:
+            Cell: The Cell object located at the center of the grid.
+        """
         return self.grid[self.height // 2][self.width // 2]
 
     def remaining_pacgums(self) -> int:
+        """
+        Counts how many regular and super Pac-Gums are
+        left uncollected in the maze.
+
+        Returns:
+            int: The total count of remaining gums.
+        """
         count = 0
         for row in self.grid:
             for cell in row:
@@ -70,7 +98,17 @@ class Maze:
         return count
 
     def neighbors(self, x: int, y: int) -> list[tuple[int, int]]:
-        """Return walkable neighbor cells (no wall blocking) from (x, y)"""
+        """
+        Return walkable neighbor cells (no wall blocking) from (x, y).
+
+        Args:
+            x (int): The x-coordinate of the current cell.
+            y (int): The y-coordinate of the current cell.
+
+        Returns:
+            list[tuple[int, int]]: A list of coordinate tuples for accessible
+            neighbor cells.
+        """
         cell = self.grid[y][x]
         result: list[tuple[int, int]] = []
         if not cell.north and y > 0:
@@ -84,13 +122,34 @@ class Maze:
         return result
 
     def eat_at(self, x: int, y: int) -> Optional[Gum]:
-        """Consume the content at (x, y) and return it (0 if empty)"""
+        """
+        Consume the content at (x, y) and return it (None if empty).
+
+        Args:
+            x (int): The x-coordinate of the cell.
+            y (int): The y-coordinate of the cell.
+
+        Returns:
+            Optional[Gum]:-
+                The consumed Gum object, or None if the cell was empty.
+        """
         cell = self.grid[y][x]
         content = cell.content
         cell.content = None
         return content
 
     def cell_size_for(self, area_width: int, area_height: int) -> int:
+        """
+        Calculates the optimal cell size to fit the maze
+        within a specified area.
+
+        Args:
+            area_width (int): The available pixel width.
+            area_height (int): The available pixel height.
+
+        Returns:
+            int: The pixel size for each cell.
+        """
         size = min(area_width // self.width, area_height // self.height)
         return max(size, 1)
 
@@ -98,6 +157,19 @@ class Maze:
             self,
             origin: tuple[int, int],
             cell_size: int) -> None:
+        """
+        Computes and updates the pixel bounding box coordinates
+        for every cell in the maze.
+
+        Args:
+            origin (tuple[int, int]):-
+                The (x, y) origin offset for the maze rendering.
+            cell_size (int):-
+                The pixel size of each individual cell.
+
+        Returns:
+            None
+        """
         ox, oy = origin
         for y in range(self.height):
             for x in range(self.width):
@@ -113,6 +185,18 @@ class Maze:
             cell_size: int,
             origin: tuple[int, int],
             conf: confing) -> None:
+        """
+        Instantiates and assigns Pac_Gum and Super_Pac_Gum
+        objects to their respective grid cells.
+
+        Args:
+            cell_size (int): The pixel size of each cell.
+            origin (tuple[int, int]): The (x, y) starting coordinate offset.
+            conf (confing): Configuration object providing item score points.
+
+        Returns:
+            None
+        """
         ox, oy = origin
         for y in range(self.height):
             for x in range(self.width):
@@ -139,6 +223,23 @@ class Maze:
              pattern_color: tuple[int, int, int] = (0,
                                                     209,
                                                     255)) -> list[list[Cell]]:
+        """
+        Renders the maze walls, background patterns,
+        and active food items onto the screen.
+
+        Args:
+            screen (pygame.Surface): The target Pygame surface to draw onto.
+            cell_size (int): The pixel size of each cell.
+            origin (tuple[int, int]):
+                The (x, y) rendering offset origin (default (0, 0)).
+            wall_color (tuple[int, int, int]):
+                The RGB color for maze walls (default yellow).
+            pattern_color (tuple[int, int, int]):
+                The RGB color for pattern blocks (default cyan).
+
+        Returns:
+            list[list[Cell]]: The 2D grid matrix of cells.
+        """
         ox, oy = origin
 
         for y in range(self.height):

@@ -6,6 +6,8 @@ from sys import exit
 
 
 class Button:
+    """Represent an interactive UI button with optional image support."""
+
     def __init__(
             self,
             pos: tuple[int, int],
@@ -20,6 +22,8 @@ class Button:
             font_path: str = "fonts/BebasNeue-Regular.ttf",
             font_size: int = 50
             ) -> None:
+        """Initialize button properties, dimensions,
+        fonts, and optional images."""
         self.pos = pos
         self.text = text
         self.width = width
@@ -44,6 +48,8 @@ class Button:
             image_pos: Optional[tuple[int, int]] = None,
             image_color: str | tuple[int, int, int] = "white",
             radius: int = 15) -> None:
+        """Render the button rectangle, text,
+        and optional image onto the screen."""
         font = pygame.font.Font(self.font, size=self.font_size)
         button_text = font.render(self.text, True, self.font_color)
         button_text_rec = button_text.get_rect(
@@ -67,6 +73,7 @@ class Button:
             screen.blit(self.resized_image, self.image_rect)
 
     def collision(self, point: tuple[int, int]) -> bool:
+        """Check if a given point collides with the button boundaries."""
         px, py = point
         button_x_left = self.button_rec.left
         button_x_right = self.button_rec.right
@@ -82,6 +89,8 @@ def in_pac_man(
         point: tuple[int, int],
         screen_width: int,
         screen_height: int) -> bool:
+    """Check if a coordinate point falls inside
+    the hidden Pac-Man trigger area."""
     x, y = point
     cx = 280 * screen_width / 1600
     cy = 608 * screen_height / 900
@@ -90,6 +99,7 @@ def in_pac_man(
 
 
 def menu_init(screen: pygame.Surface) -> list[Button]:
+    """Initialize and return a list of standard main menu buttons."""
     screen_width, screen_height = 1600, 900
 
     sx = screen_width / 1600
@@ -165,6 +175,8 @@ def show_menu(
         screen: pygame.Surface,
         cofiguration: confing,
         fram_clock: pygame.time.Clock) -> str:
+    """Manage the main menu loop, user input handling,
+    and screen transitions."""
     bottoms = menu_init(screen=screen)
     start_button = bottoms[0]
     high_score_button = bottoms[1]

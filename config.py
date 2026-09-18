@@ -17,6 +17,7 @@ ConfigurationKeys = [
 
 
 class defaults(Enum):
+    "This class contain the default values of the configurations"
     Highscore_filename = "output"
     Lives = 3
     Pacgum = 50
@@ -28,6 +29,8 @@ class defaults(Enum):
 
 
 def error_value_warning(var: str, data: Any, default: Any) -> None:
+    "This function just print the warning when the value on "
+    "any configuration like the time is invalid in the json file"
     print(
         f'Warning: The {var}\'s value that you enter witch is :"{data}" '
         f"is invalid !! So the default value of {var} "
@@ -36,6 +39,8 @@ def error_value_warning(var: str, data: Any, default: Any) -> None:
 
 
 def non_existing_warning(var: str, default: Any) -> None:
+    "This function just print the warning when the value on "
+    "any configuration like the time is not exist invalid in the json file"
     print(
         f"Warning: You are not enter any value of {var} !!"
         f" So the default value of {var} "
@@ -48,6 +53,8 @@ def validate_int(
         data: Any,
         default: defaults,
         min_num: int = 0) -> tuple[int, int]:
+    "This function validate the int and check if it has a "
+    "valid value and more than the min_num in the parameter"
     if data is not None and data != "":
         try:
             temp = int(float(data))
@@ -69,6 +76,7 @@ def validate_int(
 
 
 class confing(BaseModel):
+    "This is the class wicth is controls all the configurations valus"
     highscore_filename: str = Field(default=defaults.Highscore_filename.value)
     lives: int = Field(default=defaults.Lives.value)
     pacgum: int = Field(default=defaults.Pacgum.value)
@@ -83,6 +91,7 @@ class confing(BaseModel):
     @field_validator("highscore_filename", mode="before")
     @classmethod
     def highscore_filename_validate(cls, data: Any) -> str:
+        "This functions validate the highscore_filename"
         if data is not None:
             temp = str(data).strip()
             data = temp
@@ -102,16 +111,22 @@ class confing(BaseModel):
     @field_validator("lives", mode="before")
     @staticmethod
     def lives_validator(data: Any) -> int:
+        "This function validate the lives of the pacman, if "
+        "it is more than zero or numaric value ...etc"
         return validate_int("lives", data, defaults.Lives)[0]
 
     @field_validator("pacgum", mode="before")
     @staticmethod
     def pacgum_validator(data: Any) -> int:
+        "This function validate the pacgum number, if "
+        "it is more than zero or numaric value ...etc"
         return validate_int("pacgum", data, defaults.Pacgum, 3)[0]
 
     @field_validator("points_per_pacgum", mode="before")
     @staticmethod
     def points_per_pacgum_validate(data: Any) -> int:
+        "This function validate the points_per_pacgum number, if "
+        "it is more than zero or numaric value ...etc"
         return validate_int(
             "points_per_pacgum", data, defaults.Points_per_pacgum
         )[0]
@@ -119,6 +134,8 @@ class confing(BaseModel):
     @field_validator("points_per_super_pacgum", mode="before")
     @staticmethod
     def points_per_super_pacgum_validator(data: Any) -> int:
+        "This function validate the points_per_super_pacgum number, if "
+        "it is more than zero or numaric value ...etc"
         return validate_int(
             "points_per_super_pacgum",
             data,
@@ -128,6 +145,8 @@ class confing(BaseModel):
     @field_validator("points_per_ghost", mode="before")
     @staticmethod
     def points_per_ghost_validator(data: Any) -> int:
+        "This function validate the points_per_ghost number, if "
+        "it is more than zero or numaric value ...etc"
         return validate_int(
             "points_per_ghost", data, defaults.Points_per_ghost
         )[0]
@@ -135,22 +154,16 @@ class confing(BaseModel):
     @field_validator("level_max_time", mode="before")
     @staticmethod
     def level_max_time_validator(data: Any) -> int:
+        "This function validate the level_max_time, if "
+        "it is more than zero or numaric value ...etc"
         return validate_int(
             "level_max_time", data, defaults.Level_max_time
         )[0]
 
-    def info(self) -> None:
-        print(f"highscore_filename : {self.highscore_filename}")
-        print(f"lives : {self.lives}")
-        print(f"pacgum : {self.pacgum}")
-        print(f"points_per_pacgum : {self.points_per_pacgum}")
-        print(f"points_per_super_pacgum : {self.points_per_super_pacgum}")
-        print(f"points_per_ghost : {self.points_per_ghost}")
-        print(f"level_max_time : {self.level_max_time}")
-        print(f"levels : {self.levels}")
-
 
 def read_json(FileName: str) -> confing:
+    "This function open the json file that contain the configurations and "
+    "make an object of the confing class witch validata all the values"
     try:
         with open(FileName, "r") as file:
             lines = [ln for ln in file

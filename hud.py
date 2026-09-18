@@ -16,6 +16,25 @@ def _rounded_panel(
         color: tuple[int, int, int],
         border_color: tuple[int, int, int] | None = None,
         radius: int = 18) -> None:
+    """
+    Draws a filled rounded rectangle panel on the
+    screen with an optional border.
+
+    Args:
+        screen (pygame.Surface):
+            The target Pygame surface to draw onto.
+        rect (pygame.Rect):
+            The rectangular dimensions and position of the panel.
+        color (tuple[int, int, int]):
+            The RGB fill color of the panel.
+        border_color (tuple[int, int, int] | None):
+            The RGB color for the border, or None if no border is needed.
+        radius (int):
+            The corner radius for the rounding effect (default 18).
+
+    Returns:
+        None
+    """
     pygame.draw.rect(screen, color, rect, border_radius=radius)
     if border_color is not None:
         pygame.draw.rect(
@@ -31,6 +50,29 @@ def draw_hud(
         maze_origin: tuple[int, int],
         maze_pixel_w: int
 ) -> None:
+    """
+    Draws the Heads-Up Display (HUD) elements (Score,
+    Lives, Level, and Time Remaining) around the game maze on the screen.
+
+    Args:
+        screen (pygame.Surface):
+            The target Pygame surface to render the HUD onto.
+        score (int):
+            The current player score.
+        lives (int):
+            The remaining lives of the player.
+        level (int):
+            The current active game level.
+        time_left (float):
+            The remaining time left for the current level.
+        maze_origin (tuple[int, int]):
+            The (x, y) starting coordinates of the maze.
+        maze_pixel_w (int):
+            The total pixel width of the maze.
+
+    Returns:
+        None
+    """
     ox, oy = maze_origin
     box_w = 180
     box_h = 70

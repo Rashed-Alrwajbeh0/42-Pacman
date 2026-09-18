@@ -14,6 +14,7 @@ _FILE = Path("highscores.json")
 
 
 def _load() -> list[height_score]:
+    "Open the highscores json file and return the value in it"
     try:
         with open(_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
