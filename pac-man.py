@@ -1,6 +1,6 @@
 import sys
 import pygame
-from conf import read_json
+from config import read_json
 from menu import show_menu
 
 argv = sys.argv

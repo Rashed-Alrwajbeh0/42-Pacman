@@ -1,7 +1,10 @@
 from ghost_entity import Ghost, Ghoststate
 from cell import PacMan, Super_Pac_Gum
-from conf import confing
+from config import confing
 from maze import Maze
+from hud import draw_hud
+from render import draw_background
+from pause import show_pause_menu
 import pygame
 import sys
 from ghost import (
@@ -23,6 +26,7 @@ MAZE_ORIGIN = (HUD_PANEL_WIDTH, 50)
 
 BACKGROUND_IMAGE = "Pictures/Backgrounds/7.png"
 WALL_COLOR = (0, 209, 255)
+_ACCENT_GOLD = (255, 213, 0)
 
 
 def check_ghost_collisions(
@@ -129,41 +133,6 @@ def make_level(
         sys.exit(1)
 
 
-_BACKGROUND_CACHE: dict[tuple[str, tuple[int, int]], pygame.Surface] = {}
-
-
-def draw_background(
-        screen: pygame.Surface,
-        image_path: str,
-        alpha: int = 50,
-        base_color: tuple[int, int, int] = (8, 10, 28)) -> None:
-    """Fill the screen with a base color, then blend a background image
-    on top of it (cached so it isn't rescaled every single frame).
-
-    ``base_color`` is the deep navy tone showing through the transparent
-    image and also used as a safe fallback if the image can't be loaded,
-    so a missing/corrupt asset never crashes the game.
-    """
-    screen.fill(base_color)
-
-    window_size = screen.get_size()
-    cache_key = (image_path, window_size)
-    resized_image = _BACKGROUND_CACHE.get(cache_key)
-    if resized_image is None:
-        try:
-            image = pygame.image.load(image_path).convert()
-            resized_image = pygame.transform.smoothscale(
-                image, window_size).convert_alpha()
-            _BACKGROUND_CACHE[cache_key] = resized_image
-        except (pygame.error, FileNotFoundError) as exc:
-            print(f"Warning: could not load background '{image_path}': "
-                  f"{exc}")
-            return
-
-    resized_image.set_alpha(alpha)
-    screen.blit(resized_image, (0, 0))
-
-
 def where_i_am(
         point: tuple[int, int],
         cell_size: int,
@@ -175,105 +144,6 @@ def where_i_am(
     grid_x = max(0, min(maze.width - 1, (px - ox) // cell_size))
     grid_y = max(0, min(maze.height - 1, (py - oy) // cell_size))
     return grid_x, grid_y
-
-
-_HUD_ACCENT = (255, 213, 0)
-_HUD_BG = (18, 18, 40)
-_HUD_BG_LIGHT = (32, 32, 64)
-_HUD_TEXT = (235, 235, 245)
-_HUD_DIM = (150, 150, 170)
-_PAUSE_GOLD = (255, 213, 0)
-
-
-def show_pause_menu(
-        screen: pygame.Surface, frame_clock: pygame.time.Clock) -> str:
-    """Show the pause overlay. Returns 'resume' or 'menu'"""
-    width, height = screen.get_size()
-    font_title = pygame.font.SysFont(None, 60, bold=True)
-    font_btn = pygame.font.SysFont(None, 32)
-
-    resume_rect = pygame.Rect(width // 2 - 130, height // 2 - 50, 260, 60)
-    menu_rect = pygame.Rect(width // 2 - 130, height // 2 + 30, 260, 60)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                return "resume"
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                if resume_rect.collidepoint(pos):
-                    return "resume"
-                if menu_rect.collidepoint(pos):
-                    return "menu"
-
-        overlay = pygame.Surface((width, height))
-        overlay.set_alpha(180)
-        overlay.fill((0, 0, 0))
-        screen.blit(overlay, (0, 0))
-
-        title = font_title.render("PAUSED", True, _PAUSE_GOLD)
-        screen.blit(
-            title, title.get_rect(center=(width // 2, height // 2 - 120)))
-        pygame.draw.rect(screen, _PAUSE_GOLD, resume_rect, border_radius=14)
-        text = font_btn.render("Resume", True, "black")
-        screen.blit(text, text.get_rect(center=resume_rect.center))
-        pygame.draw.rect(screen, _PAUSE_GOLD, menu_rect, border_radius=14)
-        text = font_btn.render("Main Menu", True, "black")
-        screen.blit(text, text.get_rect(center=menu_rect.center))
-        pygame.display.update()
-        frame_clock.tick(60)
-
-
-def _rounded_panel(
-        screen: pygame.Surface,
-        rect: pygame.Rect,
-        color: tuple[int, int, int],
-        border_color: tuple[int, int, int] | None = None,
-        radius: int = 18) -> None:
-    pygame.draw.rect(screen, color, rect, border_radius=radius)
-    if border_color is not None:
-        pygame.draw.rect(
-            screen, border_color, rect, width=2, border_radius=radius)
-
-
-def draw_hud(
-        screen: pygame.Surface,
-        score: int,
-        lives: int,
-        level: int,
-        time_left: float,
-        maze_origin: tuple[int, int],
-        maze_pixel_w: int
-) -> None:
-    ox, oy = maze_origin
-    box_w = 180
-    box_h = 70
-    gap = 35
-    gap_from_maze = 40
-    vertical_offset = 60
-
-    label_font = pygame.font.SysFont(None, 24)
-    value_font = pygame.font.SysFont(None, 40, bold=True)
-
-    def draw_box(x: int, y: int, label: str, value: str) -> None:
-        rect = pygame.Rect(x, y, box_w, box_h)
-        _rounded_panel(
-            screen, rect, _HUD_BG_LIGHT, border_color=_HUD_ACCENT, radius=12)
-        label_surf = label_font.render(label.upper(), True, _HUD_DIM)
-        screen.blit(label_surf, (rect.left + 12, rect.top + 8))
-        value_surf = value_font.render(value, True, _HUD_TEXT)
-        screen.blit(value_surf, (rect.left + 12, rect.top + 30))
-    start_y = oy + vertical_offset
-    left_x = ox - gap_from_maze - box_w
-    draw_box(left_x, start_y, "Score", f"{score:,}")
-    draw_box(left_x, start_y + box_h + gap, "Lives", str(lives))
-
-    right_x = ox + maze_pixel_w + gap_from_maze
-    draw_box(right_x, start_y, "Level", str(level))
-    draw_box(
-        right_x, start_y + box_h + gap, "Time", str(max(int(time_left), 0)))
 
 
 def game_init(screen: pygame.Surface, cofiguration: confing) -> Any:
@@ -387,6 +257,8 @@ def game_play(
      time_left,
      direction,
      Stop_timer) = game_init(screen=screen, cofiguration=cofiguration)
+
+    pause_button_rect = pygame.Rect(20, 20, 100, 40)
     while True:
         dt = fram_clock.tick(60) / 1000
         for event in pygame.event.get():
@@ -394,6 +266,11 @@ def game_play(
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    action = show_pause_menu(screen, fram_clock)
+                    if action == "lose":
+                        return "lose", score
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pause_button_rect.collidepoint(event.pos):
                     action = show_pause_menu(screen, fram_clock)
                     if action == "menu":
                         return "menu", score
@@ -439,6 +316,13 @@ def game_play(
             origin,
             wall_color=WALL_COLOR,
             pattern_color=WALL_COLOR)
+
+        pygame.draw.rect(
+            screen, _ACCENT_GOLD, pause_button_rect, border_radius=10)
+        pause_text = pygame.font.SysFont(None, 28).render("Pause",
+                                                          True, "black")
+        screen.blit(
+            pause_text, pause_text.get_rect(center=pause_button_rect.center))
 
         keyboard = pygame.key.get_pressed()
         if keyboard[direction_key["top"]]:

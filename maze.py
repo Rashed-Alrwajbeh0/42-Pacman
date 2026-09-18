@@ -2,7 +2,7 @@ from cell import Cell, Gum, Pac_Gum, Super_Pac_Gum
 from mazegenerator import MazeGenerator
 from random import randint, seed
 from typing import Optional
-from conf import confing
+from config import confing
 import pygame
 
 

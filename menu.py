@@ -1,7 +1,7 @@
 import pygame
 from math import pow
 from typing import Optional
-from conf import confing
+from config import confing
 from sys import exit
 
 
@@ -205,17 +205,23 @@ def show_menu(
                 from game import game_play
                 from end_screens import show_game_over, show_victory
                 from highscore import is_top_10, add_highscore
-                result, score = game_play(
-                    screen=screen, cofiguration=cofiguration,
-                    direction_key=controls_key)
-                new_high = is_top_10(score)
-                if result == "lose":
-                    action, name = show_game_over(screen, score, new_high)
-                else:
-                    action, name = show_victory(
-                        screen, score, new_high, has_next_level=False)
-                if new_high and name:
-                    add_highscore(name, score)
+                while True:
+                    result, score = game_play(
+                        screen=screen, cofiguration=cofiguration,
+                        direction_key=controls_key)
+                    if result == "menu":
+                        break
+                    new_high = is_top_10(score)
+                    if result == "lose":
+                        action, name = show_game_over(screen, score, new_high)
+                    else:
+                        action, name = show_victory(
+                            screen, score, new_high, has_next_level=False)
+                    if new_high and name:
+                        add_highscore(name, score)
+                    if action != "continue":
+                        break
+
             elif high_score_button.collision(mouse_point):
                 from scores import show_score
                 show_score(screen=screen, conf=cofiguration)
@@ -238,17 +244,22 @@ def show_menu(
                 from game import game_play
                 from end_screens import show_game_over, show_victory
                 from highscore import is_top_10, add_highscore
-                result, score = game_play(
-                    screen=screen, cofiguration=cofiguration,
-                    direction_key=controls_key,
-                    cheat=True)
-                new_high = is_top_10(score)
-                if result == "lose":
-                    action, name = show_game_over(screen, score, new_high)
-                else:
-                    action, name = show_victory(
-                        screen, score, new_high, has_next_level=False)
-                if new_high and name:
-                    add_highscore(name, score)
+                while True:
+                    result, score = game_play(
+                        screen=screen, cofiguration=cofiguration,
+                        direction_key=controls_key,
+                        cheat=True)
+                    if result == "menu":
+                        break
+                    new_high = is_top_10(score)
+                    if result == "lose":
+                        action, name = show_game_over(screen, score, new_high)
+                    else:
+                        action, name = show_victory(
+                            screen, score, new_high, has_next_level=False)
+                    if new_high and name:
+                        add_highscore(name, score)
+                    if action != "continue":
+                        break
         pygame.display.update()
         fram_clock.tick(60)

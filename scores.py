@@ -3,7 +3,7 @@ rest of the game's UI."""
 
 import pygame
 from sys import exit
-from conf import confing
+from config import confing
 from game import draw_background
 from highscore import get_top_10
 
