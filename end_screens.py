@@ -121,7 +121,13 @@ def _end_screen(
                 name, typing = _handle_typing_key(event, name)
             if not typing and event.type == pygame.MOUSEBUTTONDOWN:
                 for action, _label, _color, rect in rects:
-                    if rect.collidepoint(event.pos):
+                    from scores import collidepoint
+                    if collidepoint(
+                            point=event.pos,
+                            button_x_left=rect.left,
+                            button_x_right=rect.right,
+                            button_y_bottom=rect.bottom,
+                            button_y_top=rect.top):
                         return action, (name.strip() or None)
 
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)

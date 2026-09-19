@@ -119,10 +119,10 @@ class Field:
                 True if the point is inside the field, False otherwise.
         """
         px, py = point
-        button_x_left = self.Field_rect.left
-        button_x_right = self.Field_rect.right
-        button_y_top = self.Field_rect.top
-        button_y_bottom = self.Field_rect.bottom
+        button_x_left: int = self.Field_rect.left
+        button_x_right: int = self.Field_rect.right
+        button_y_top: int = self.Field_rect.top
+        button_y_bottom: int = self.Field_rect.bottom
         return (px <= button_x_right and
                 px >= button_x_left and
                 py >= button_y_top and

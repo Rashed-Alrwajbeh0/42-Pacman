@@ -365,11 +365,6 @@ def game_play(
                              screen=screen,
                              cofiguration=cofiguration)
                         continue
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if pause_button_rect.collidepoint(event.pos):
-                    action = show_pause_menu(screen, fram_clock)
-                    if action == "menu":
-                        return "menu", score
                     if event.key == pygame.K_F3:
                         pacman.lives += 1
                     if event.key == pygame.K_F4:
@@ -378,6 +373,19 @@ def game_play(
                         Ghost_freeze = not Ghost_freeze
                     if event.key == pygame.K_F6:
                         Stop_timer = not Stop_timer
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                from scores import collidepoint
+                if collidepoint(
+                        point=event.pos,
+                        button_x_left=pause_button_rect.left,
+                        button_x_right=pause_button_rect.right,
+                        button_y_bottom=pause_button_rect.bottom,
+                        button_y_top=pause_button_rect.top):
+                    action = show_pause_menu(screen, fram_clock)
+                    if action == "menu":
+                        return "menu", score
+                    if action == "lose":
+                        return "lose", score
 
         draw_background(screen=screen, image_path=BACKGROUND_IMAGE, alpha=100)
         level_maze.draw(

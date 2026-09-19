@@ -3,6 +3,8 @@
 import json
 from pathlib import Path
 from typing import TypedDict
+import importlib
+pac_man_main_file = importlib.import_module("pac-man")
 
 
 class height_score(TypedDict):
@@ -10,7 +12,8 @@ class height_score(TypedDict):
     score: int
 
 
-_FILE = Path("highscores.json")
+_FILE = Path(
+    f"{pac_man_main_file.configuration.highscore_filename}.json")
 
 
 def _load() -> list[height_score]:

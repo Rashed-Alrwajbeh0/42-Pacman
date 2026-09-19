@@ -75,10 +75,10 @@ class Button:
     def collision(self, point: tuple[int, int]) -> bool:
         """Check if a given point collides with the button boundaries."""
         px, py = point
-        button_x_left = self.button_rec.left
-        button_x_right = self.button_rec.right
-        button_y_top = self.button_rec.top
-        button_y_bottom = self.button_rec.bottom
+        button_x_left: int = self.button_rec.left
+        button_x_right: int = self.button_rec.right
+        button_y_top: int = self.button_rec.top
+        button_y_bottom: int = self.button_rec.bottom
         return (px <= button_x_right and
                 px >= button_x_left and
                 py >= button_y_top and

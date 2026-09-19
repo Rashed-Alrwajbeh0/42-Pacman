@@ -49,10 +49,10 @@ class Gum:
 
     def collision(self, point: tuple[int, int]) -> bool:
         px, py = point
-        gum_x_left = self.gum_rect.left
-        gum_x_right = self.gum_rect.right
-        gum_y_top = self.gum_rect.top
-        gum_y_bottom = self.gum_rect.bottom
+        gum_x_left: int = self.gum_rect.left
+        gum_x_right: int = self.gum_rect.right
+        gum_y_top: int = self.gum_rect.top
+        gum_y_bottom: int = self.gum_rect.bottom
         return (px <= gum_x_right and
                 px >= gum_x_left and
                 py >= gum_y_top and
